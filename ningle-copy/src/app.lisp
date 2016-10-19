@@ -6,6 +6,7 @@
                           :*request*
                           :*response*
                           :*session*
+                          :context
                           :make-context
                           :make-request
                           :make-response)
@@ -14,9 +15,9 @@
                 :request-method
                 :request-path-info
                 :request-parameters)
-  (:import-from :lack.request
-                :response-status
+  (:import-from :lack.response
                 :response-body
+                :response-status
                 :finalize-response)
   (:import-from :lack.component
                 :lack-component
@@ -44,7 +45,7 @@
               (and accept-header
                    (some (lambda (type)
                            (ppcre:scan (format nil "(?i)\\b~A\\b" type) accept-header))
-                         (if (listp tyeps)
+                         (if (listp types)
                              types
                              (list types)))))))
     hash))
@@ -75,7 +76,7 @@
               (finalize-response *response*))
              (t
               (finalize-response *response*)))))
-    (let* ((context (make-context this enc))
+    (let* ((context (make-context this env))
            (result (with-context (context)
                      (call-next-method))))
       (if (functionp result)
@@ -86,7 +87,7 @@
           (with-context (context)
             (process-result result))))))
 
-(defmethod call ((this <app>) enc)
+(defmethod call ((this <app>) env)
   "Overriding method. This method will be called for each request."
   (declare (ignore env))
   (multiple-value-bind (res foundp)
@@ -159,10 +160,10 @@
   (setf (mapper app) (make-mapper)))
 
 (defmethod make-request ((app <app>) env)
-  "Make a request object. A class of the request object can be changed by overwritting this."
+  "Make a request object. A class of the request object can be changed by overwriting this."
   (lack.request:make-request env))
 
 (defmethod make-response ((app <app>) &optional status headers body)
-  "Make a response object. A class of response object can be changed by overwriting this."
+  "Make a response object. A class of the response object can be changed by overwriting this."
   (declare (ignore app))
   (lack.response:make-response status headers body))
