@@ -1,4 +1,4 @@
-(in-package :wookie)
+(in-package :wookie-copy)
 
 (defclass acceptor ()
      ((bind :accessor acceptor-bind :initarg :bind :initform nil)

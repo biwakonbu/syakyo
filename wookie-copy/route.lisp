@@ -1,4 +1,4 @@
-(in-package :wookie)
+(in-package :wookie-copy)
 
 (defvar *routes* nil
   "Holds all the routes for the system.")

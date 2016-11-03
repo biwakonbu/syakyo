@@ -1,4 +1,4 @@
-(in-package :wookie)
+(in-package :wookie-copy)
 
 (defun map-plist (plist fn)
   "Iterate over a plist"

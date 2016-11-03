@@ -1,4 +1,4 @@
-(defpackage :wookie
+(defpackage :wookie-copy
   (:use :cl)
   (:export #:defroute
            #:acceptor

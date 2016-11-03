@@ -1,1 +1,1 @@
-(in-package :wookie)
+(in-package :wookie-copy)
