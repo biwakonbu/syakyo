@@ -5,11 +5,11 @@
   (:use :cl))
 (in-package :wookie-test)
 
-(wookie:defroute :GET "/" (http reply)
-  (wookie:send-reply reply :body "Hello!"))
+(wookie-copy:defroute :GET "/" (http reply)
+  (wookie-copy:send-reply reply :body "Hello!"))
 
 (as:start-event-loop
   (lambda ()
-    (let ((acceptor (make-instance 'wookie:acceptor :port 8090)))
-      (wookie:start-server acceptor)))
+    (let ((acceptor (make-instance 'wookie-copy:acceptor :port 8090)))
+      (wookie-copy:start-server acceptor)))
   :catch-app-errors t)
