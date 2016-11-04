@@ -15,7 +15,7 @@
   (:documentation
    "Start wookie with the given acceptor."))
 
-(defmethod start-server ((acceptor))
+(defmethod start-server ((acceptor acceptor))
   ;; start the async server
   (as::tcp-server (acceptor-bind acceptor) (acceptor-port acceptor)
     (lambda (sock data)
