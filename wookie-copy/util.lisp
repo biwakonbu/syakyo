@@ -22,7 +22,8 @@
                         (eq char-before #\-)
                         (eq char-before #\space)
                         (eq char-before #\tab))
-                (setf (aref lower i) (aref (string-upcase (string c)) 0)))))))
+                (setf (aref lower i) (aref (string-upcase (string c)) 0)))))
+    lower))
 
 (defun lookup-status-text (status-code)
   "Get the HTTP standard text that goes along with a status code."
