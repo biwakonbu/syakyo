@@ -72,7 +72,7 @@
                      (append (list nil
                                    (concatenate 'string format-str "~c~c"))
                              (append format-args (list #\return #\newline)))))))
-      (write-http-line "Http/1.1 ~a ~a" status status-text)
+      (write-http-line "HTTP/1.1 ~a ~a" status status-text)
       ;; write all the headers
       (map-plist headers
                  (lambda (header value)
