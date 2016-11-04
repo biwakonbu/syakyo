@@ -9,9 +9,9 @@
                #:babel
                #:http-parse)
   :components
-  ((:file "package" :depends-on ("util"))
-   (:file "util" :depends-on ("config"))
-   (:file "route" :depends-on ("error"))
-   (:file "plugin" :depends-on ("package" "state"))
-   (:file "hook" :depends-on ("package" "state"))
+  ((:file "package")
+   (:file "util" :depends-on ("package"))
+   (:file "route" :depends-on ("util"))
+   (:file "plugin" :depends-on ("util"))
+   (:file "hook" :depends-on ("util"))
    (:file "acceptor" :depends-on ("route" "hook" "plugin"))))
