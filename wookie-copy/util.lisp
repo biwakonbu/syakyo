@@ -2,7 +2,7 @@
 
 (defun map-plist (plist fn)
   "Iterate over a plist"
-  (dotimes (if (/ (lengh plist) 2))
+  (dotimes (if (/ (length plist) 2))
     (let (header value)
       (setf header (car plist)
             plist (cdr plist)

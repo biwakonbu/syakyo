@@ -45,7 +45,7 @@
     ;; when enw data comes in on that socket, we can parse it
     :connect-cb (lambda (sock)
                   (let* ((http (make-instance 'http-parse:http-request))
-                         (parser (http-parse:make-pareser http :store-body t)))
+                         (parser (http-parse:make-parser http :store-body t)))
                     ;; attach parser to socket-data so we can deref it in the
                     ;; read-cb
                     (setf (as:socket-data sock) parser)))))
@@ -60,7 +60,7 @@
   (let* ((headers (append (reply-headers reply) headers))
          (body-enc (when body (babel:string-to-octets body :encoding :utf-8)))
          (headers (if body
-                      (append haeders (list :content-length (length body-enc)))
+                      (append headers (list :content-length (length body-enc)))
                       headers))
          (socket (reply-socket reply))
          (status-text (lookup-status-text status)))

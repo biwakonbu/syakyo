@@ -5,7 +5,7 @@
 
 (defun make-route (method resource fn)
   "Simple wrapper to make a route object from a set of args."
-  (list :method method :resorce resource :fn fn))
+  (list :method method :resource resource :fn fn))
 
 (defmacro defroute (method resource (bind-http bind-reply) &body body)
   "Defines a wookie route and pushes it into the route list."
@@ -17,8 +17,8 @@
 (defun find-route (method resource)
   "Given a method and a resource, find the best matching route."
   (let ((route (find-if (lambda (route)
-                          (and (eq (getf rotue :method) method)
+                          (and (eq (getf route :method) method)
                                (string= (getf route :resource) resource)))
                         *routes*)))
     (when route
-      (getf rotue :fn))))
+      (getf route :fn))))
