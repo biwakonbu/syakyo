@@ -30,7 +30,7 @@
            (when matchedp
              (let* ((fn (getf route :fn))
                     (curried-fn (lambda (reply)
-                                  (apply fn (append (list reply)
+                                  (apply fn (append (list request reply)
                                                     (coerce mathes 'list))))))
                (return-from find-route curried-fn)))))))
 
@@ -62,7 +62,7 @@
                             *routes)))
 
 (defmacro defroute ((method resource &key (regex t) (case-sensitive t))
-                    (bind-reply &optional bind-args)
+                    (bind-request bind-response &optional bind-args)
                     &body body)
   "Defines a wookie route and pushes it into the route list."
   (let* ((new-route (gensym))
@@ -73,7 +73,8 @@
                           (setf ignore-bind-args t)
                           (gensym)))))
     `(let ((,new-route (make-route ,method ,resource
-                                   (lambda (,bind-reply &rest ,bind-args)
+                                   (lambda (,bind-request ,bind-response &rest ,bind-args)
+                                     (declare (ignorable ,bind-request))
                                      ,(when ignore-bind-args
                                         '(declare (ignore ,bind-args)))
                                      ,@body)
