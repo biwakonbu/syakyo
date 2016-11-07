@@ -25,7 +25,7 @@
             ;; route
             (let ((router (find-route (http-parse:http-method http)
                                       (http-parse:http-resource http)))
-                  (reply (make-instance 'request
+                  (request (make-instance 'request
                                         :method (http-parse:http-method http)
                                         :resource (http-parse:http-resource http)
                                         :http http))

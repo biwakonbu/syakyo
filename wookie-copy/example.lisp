@@ -7,11 +7,11 @@
 
 (wookie-copy:clear-routes)
 
-(wookie-copy:defroute (:get "/") (reply)
-  (wookie-copy:send-reply reply :body "Hello!"))
+(wookie-copy:defroute (:get "/") (req res)
+  (wookie-copy:send-response res :body "Hello!"))
 
-(wookie-copy:defroute (:put "/albums/([0-9]+)") (reply args)
-  (wookie-copy:send-reply :body (format nil "Album ~a updated!" (car args))))
+(wookie-copy:defroute (:put "/albums/([0-9]+)") (req res args)
+  (wookie-copy:send-response res :body (format nil "Album ~a updated!" (car args))))
 
 (as:start-event-loop
   (lambda ()

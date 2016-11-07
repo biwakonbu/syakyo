@@ -1,9 +1,9 @@
-(in-package :wookie)
+(in-package :wookie-copy)
 
 (defclass request ()
-  ((method :accessor request-method :iniarg :method :initform :get)
+  ((method :accessor request-method :initarg :method :initform :get)
    (resource :accessor request-resource :initarg :resource :initform "/")
-   (http :accessor request-http :initarg :http :iniform nil))
+   (http :accessor request-http :initarg :http :initform nil))
   (:documentation "A class describung a request, passed to every route."))
 
 (defclass response ()

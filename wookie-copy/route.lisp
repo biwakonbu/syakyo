@@ -1,13 +1,13 @@
 (in-package :wookie-copy)
 
-(defvar *routes* (make-array 0 :adjestable t :fill-pointer t)
+(defvar *routes* (make-array 0 :adjustable t :fill-pointer t)
   "Holds all the routes for the system.")
 
 (defun clear-routes ()
   "Clear out all routes."
-  (setf *routes* (make-array 0 :adjestable t :fill-pointer t)))
+  (setf *routes* (make-array 0 :adjustable t :fill-pointer t)))
 
-(defmacro make-route (method resource fn &key regex case-sensitive)
+(defun make-route (method resource fn &key regex case-sensitive)
   "Simple wrapper to make a route object from a set of args."
   (let ((scanner (if regex
                      (cl-ppcre:create-scanner
@@ -21,17 +21,18 @@
           :resource-str resource)))
 
 (defun find-route (method resource)
+  "Given a method and a resource, find the best matching route."
   (loop for route across *routes* do
        (when (eq (getf route :method) method)
          (multiple-value-bind (matchedp matches)
              (if (getf route :regex)
                  (cl-ppcre:scan-to-strings (getf route :resource) resource)
-                 (string* (getf route :resource) resource))
+                 (string= (getf route :resource) resource))
            (when matchedp
              (let* ((fn (getf route :fn))
-                    (curried-fn (lambda (reply)
-                                  (apply fn (append (list request reply)
-                                                    (coerce mathes 'list))))))
+                    (curried-fn (lambda (request response)
+                                  (apply fn (append (list request response)
+                                                    (coerce matches 'list))))))
                (return-from find-route curried-fn)))))))
 
 
@@ -76,7 +77,7 @@
                                    (lambda (,bind-request ,bind-response &rest ,bind-args)
                                      (declare (ignorable ,bind-request))
                                      ,(when ignore-bind-args
-                                        '(declare (ignore ,bind-args)))
+                                       `(declare (ignore ,bind-args)))
                                      ,@body)
                                    :regex ,regex
                                    :case-sensitive ,case-sensitive)))
