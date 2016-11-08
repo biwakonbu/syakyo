@@ -34,7 +34,7 @@
               (run-hooks :pre-route request response)
               ;; call matching route or signal error
               (if route-fn
-                  (funcall router request response)
+                  (funcall route-fn request response)
                   ;; TODO replace with error hook
                   (send-reply response :status 404 :body "Page not found =["))
               ;; run post-route hooks
