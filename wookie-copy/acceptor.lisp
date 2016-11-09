@@ -46,7 +46,7 @@
             ;; we got a full request, parsed and ready to go, find a matching
             ;; route
             (let ((route-fn (find-route (http-parse:http-method http)
-                                      (http-parse:http-resource http)))
+                                        (http-parse:http-resource http)))
                   (request (make-instance 'request
                                         :method (http-parse:http-method http)
                                         :resource (http-parse:http-resource http)

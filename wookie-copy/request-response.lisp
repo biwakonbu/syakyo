@@ -3,6 +3,7 @@
 (defclass request ()
   ((method :accessor request-method :initarg :method :initform :get)
    (resource :accessor request-resource :initarg :resource :initform "/")
+   (plugin-data :accessor request-plugin-data :initarg :plugin-data :initform nil)
    (http :accessor request-http :initarg :http :initform nil))
   (:documentation "A class describung a request, passed to every route."))
 
@@ -49,8 +50,8 @@
         (as:write-socket-data socket body-enc)))
     (when close
       (as:write-socket-data sockt nil
-                            :write-cb (lambda (socket)
-                                        (as:close-socket socket))))))
+        :write-cb (lambda (socket)
+                    (as:close-socket socket))))))
 
 (defun start-response (response &key (status 200) headers)
   "Start a response to the client, but do not specify body content (or close the
@@ -62,7 +63,7 @@
   (send-response response
                  :status status
                  :headers (append headers
-                                  (list :transfer-encoding "shunked")))
+                                  (list :transfer-encoding "chunked")))
   (let* ((async-stream (make-instance 'as:async-io-stream :socket (response-socket response)))
          (chunked-stream (chunga:make-chunked-stream async-stream)))
     (setf (chunga:chunked-stream-output-chunking-p chunked-stream) t)

@@ -34,8 +34,8 @@
                     (curried-fn (lambda (request response)
                                   (apply fn (append (list request response)
                                                     (coerce matches 'list))))))
-               (setf (getf route :fn) curi)
-               (return-from find-route)))))))
+               (setf (getf route :fn) curried-fn)
+               (return-from find-route route)))))))
 
 
 (defun upsert-route (new-route)
