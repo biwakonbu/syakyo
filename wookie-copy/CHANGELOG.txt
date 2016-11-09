@@ -1,5 +1,6 @@
-latest version 82c95e261....
+latest version 
 #############################
+
 
 * implementation from 82c95e26140e2868fdf957be64190cda3f94aa81 commit log
 * implementation from 5f0a86d76080d5b66a263bae9da590882b7a91d5 commit log
