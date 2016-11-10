@@ -39,6 +39,12 @@
                              (append format-args (list #\return #\newline)))))))
       ;; write the status line
       (write-http-line "HTTP/1.1 ~a ~a" status status-text)
+      (unless (getf headers :server)
+        (setf headers (append headers
+                              (list :server (if *hide-version*
+                                                "Wookie"
+                                                (format nil "Wookie (~a)"
+                                                        (asdf:component-version (asdf:find-system :wookie-copy))))))))
       ;; write all the headers
       (map-plist headers
                  (lambda (header value)
