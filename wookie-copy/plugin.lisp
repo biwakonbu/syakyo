@@ -3,7 +3,8 @@
   (:export :register-plugin
            :set-plugin-request-data
            :get-plugin-request-data
-           :set-plugin-folder
+           :*plugin-folders*
+           :*enabled-plugins*
            :load-plugins)
   (:import-from :wookie-copy))
 (in-package :wookie-copy)
@@ -12,21 +13,29 @@
   "A hash table holding all registered Wookie plugins.")
 
 (defvar *plugin-config* nil
-  "A hash table hoding configuration for all plugins.")
+  "A hash table hoding configuration values for all plugins.")
 
-(defvar *plugin-folder* "./wookie-copy-plugins/"
-  "thedirectory Wookie plugins are loaded from.")
+(defvar *plugin-folders* "./wookie-copy-plugins/"
+  "A list of directories where wookie plugins can be found.")
 
-(defun register-plugin (plugin-name meta init-fn)
+(defvar *enabled-plugins* nil
+  "A list of (keyword) names of enabled plugins.")
+
+(defun register-plugin (plugin-name meta init-function unload-function)
   "Register a plugin in the Wookie plugin system. Generally this is called from
    a plugin.lisp file, but can also be called elsewhere in the plugin. The
    plugin-name argument must be a unique keyword, meta is a plist of information
    about the plugin (name, author, description, etc), and init-fn is the
    initialization function called that loads the plugin (called only once, on
    register)."
-  (setf (gethash plugin-name *plugins*)
-        (list :name plugin-name :meta meta))
-  (funcall init-fn))
+  (when (find plugin-name *enabled-plugins*)
+    (setf (gethash plugin-name *plugins*)
+          (list :name plugin-name :meta meta :unload-fn unload-function))
+    (funcall init-function)))
+
+(defun unload-plugin (plugin-name)
+  "Unload a plugin from the wookie system. If it's currently registered, its
+   unload-function will be called.")
 
 (defun plugin-config (plugin-name)
   "Return the configuration for a plugin. Setfable."
@@ -48,10 +57,6 @@
   (unless (hash-table-p (request-plugin-data request))
     (setf (request-plugin-data request) (make-hash-table :test #'eq)))
   (setf (gethash plugin-name (request-plugin-data request)) data))
-
-(defun set-plugin-folder (folder)
-  "Set the directory to load Wookie plugins from."
-  (setf *plugin-folder* folder))
 
 (defun load-plugins ()
   "Load all plugins under the *plugin-folder* fold (set with set-plugin-folder).
