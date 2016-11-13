@@ -1,7 +1,6 @@
 ;; wookie-plugin-export provides a shared namespace for plugins to provide
 ;; their public symbols to. apps can :use this package to gain access to
 ;; the shared plugin namespace.
-
 (defpackage :wookie-copy-plugin-export
   (:use :cl))
 
@@ -14,7 +13,7 @@
            :*enabled-plugins*
            :load-plugins)
   (:import-from :wookie-copy))
-(in-package :wookie-copy)
+(in-package :wookie-copy-plugin)
 
 (defvar *plugins* nil
   "A hash table holding all registered Wookie plugins.")
