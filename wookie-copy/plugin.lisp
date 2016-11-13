@@ -17,13 +17,10 @@
 
 (defvar *plugins* nil
   "A hash table holding all registered Wookie plugins.")
-
 (defvar *plugin-config* nil
   "A hash table hoding configuration values for all plugins.")
-
 (defvar *plugin-folders* "./wookie-copy-plugins/"
   "A list of directories where wookie plugins can be found.")
-
 (defvar *enabled-plugins* nil
   "A list of (keyword) names of enabled plugins.")
 
@@ -69,9 +66,20 @@
     (setf (request-plugin-data request) (make-hash-table :test #'eq)))
   (setf (gethash plugin-name (request-plugin-data request)) data))
 
-(defun load-plugins ()
+(defun get-plugin-request-data (plugin-name request)
+  "Retrieve the data stored into a request object for the plugin-name (keyword)
+   plugin."
+  (let ((data (request-plugin-data request)))
+    (when (hash-table-p data)
+      (gethash plugin-name data))))
+
+(defparameter *scanner-plugin-name*
+  (cl-ppcre:create-scanner "[/\\\\]([a-z-_]+)[/\\\\]?$" :case-insensitive-mode t)
+  "Basically unix's basename in a regex.")
+
+(defun load-plugins (&key compile)
   "Load all plugins under the *plugin-folder* fold (set with set-plugin-folder).
-￼ +   There is also the option to compile the plugins (default nil)."
+   There is also the option to compile the plugins (default nil)."
   (unless *plugins*
     (setf *plugins* (make-hash-table :test #'eq)))
   ;; unload current plugins
