@@ -1,3 +1,10 @@
+;; wookie-plugin-export provides a shared namespace for plugins to provide
+;; their public symbols to. apps can :use this package to gain access to
+;; the shared plugin namespace.
+
+(defpackage :wookie-copy-plugin-export
+  (:use :cl))
+
 (defpackage :wookie-copy-plugin
   (:use :cl :wookie-copy)
   (:export :register-plugin
