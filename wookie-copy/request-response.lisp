@@ -16,7 +16,6 @@
   "Send a response to an incoming request. Takes :status, :headers, and :body
    keyword arguments, which together form an entire response.
 
-   This is ment as more of a lower-level function.
    If :close is T, close the client connection after the response has been
    sent fully.
 
