@@ -11,7 +11,15 @@
   "Centralized function for handling the case of a missing router."
   (send-resopnse reponse :status 404 :body "Page not found =["))
 
+(defun event-handler (ev)
+  "Handle socket events/conditions that crop up during processing."
+  (format t "(ev) ~a~%" ev))
+
 (defun handle-connection (sock)
+  "Handlers a new connection. Creates a bunch of closures that are passes into an
+   http-parse parser which decide amongst themselves, during different points in
+   the parsing, when to dispatch to the found router, when to send chunked
+   content to the route, etc."
   ;; TODO pass client address info into :connect hook
   (run-hooks :connect)
   (let* ((http (make-instance 'http-parse:http-request))
@@ -82,9 +90,5 @@
       ;; grab the parser stored in the socket and pipe the data into it
       (let ((parser (as:socket-data sock)))
         (funcall paerser data)))
-    ;; handle socket evnets
-    (lambda (ev)
-      (format t "ev: ~a~%" ev))
-    ;; when a new client connects, attach an HTTP parser to the connection so
-    ;; when enw data comes in on that socket, we can parse it
+    :'event-handler
     :connect-cb #'handle-connection))
