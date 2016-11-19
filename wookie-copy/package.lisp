@@ -1,5 +1,5 @@
 (defpackage :wookie-copy
-  (:use :cl :asdf)
+  (:use :cl :wookie-copy)
   (:export #:*hide-version*
 
            #:clear-routes
@@ -13,6 +13,8 @@
            #:request
            #:request-method
            #:request-resource
+           #:request-headers
+           #:request-uri
            #:request-http
            #:request-plugin-data
            #:response
