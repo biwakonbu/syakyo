@@ -16,7 +16,7 @@
   (:import-from :wookie-copy))
 (in-package :wookie-copy-plugin)
 
-(defvar *plugins* nil
+(defvar *plugins* (make-hash-table :test #'eql)
   "A hash table holding all registered Wookie plugins.")
 (defvar *plugin-config* nil
   "A hash table hoding configuration values for all plugins.")

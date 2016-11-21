@@ -10,6 +10,8 @@
                #:babel
                #:chunga
                #:http-parse
+               #:puri
+               #:local-time
                #:cl-fad)
   :components
   ((:file "util")

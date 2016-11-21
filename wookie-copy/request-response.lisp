@@ -6,12 +6,14 @@
    (uri :accessor request-uri :initarg :url :initform nil)
    (headers :accessor request-headers :initarg :headers :initform nil)
    (plugin-data :accessor request-plugin-data :initarg :plugin-data :initform nil)
+   (body-callback :accessor request-body-callback :initarg :body-callback :initform nil)
    (http :accessor request-http :initarg :http :initform nil))
   (:documentation "A class describung a request, passed to every route."))
 
 (defclass response ()
   ((socket :accessor response-socket :initarg :socket :initform nil)
-   (headers :accessor response-headers :initarg :headers :initform nil))
+   (headers :accessor response-headers :initarg :headers :initform nil)
+   (request :accessor response-request :initarg :request :initform nil))
   (:documentation "A class holding information about a response to the client."))
 
 (defmacro with-chunking (request (chunk-data last-chunk-p) &body body)
@@ -50,10 +52,8 @@
    keyword arguments, which together form an entire response.
 
    If :close is T, close the client connection after the response has been
-   sent fully.
-
-   At the moment, does *not* support streaming chunked content."
-  (run-hooks :response response status headers body)
+   sent fully."
+  (run-hooks :response-started response (response-request response) status headers body)
   (let* ((headers (append (response-headers response) headers))
          (body-enc (when body (babel:string-to-octets body :encoding :utf-8)))
          (headers (if body
