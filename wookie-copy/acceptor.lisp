@@ -1,11 +1,15 @@
 (in-package :wookie-copy)
 
 (defclass acceptor ()
-     ((bind :accessor acceptor-bind :initarg :bind :initform nil)
-      (port :accessor acceptor-port :initarg :port :initform 80)
-      (ssl :accessor acceptor-ssl :initarg :ssl :initform nil)
-      (ssl-cert :accessor acceptor-ssl-cert :initarg :ssl-cert :initform nil)
-      (ssl-key :accessor acceptor-ssl-key :initarg :ssl-key :initform nil)))
+  ((bind :accessor acceptor-bind :initarg :bind :initform nil)
+   (port :accessor acceptor-port :initarg :port :initform 80))
+  (:documentation "Describes an HTTP listener."))
+
+(defclass ssl-acceptor-ssl (acceptor)
+  ((ssl :accessor acceptor-ssl :initarg :ssl :initform nil)
+   (ssl-cert :accessor acceptor-ssl-cert :initarg :ssl-cert :initform nil)
+   (ssl-key :accessor acceptor-ssl-key :initarg :ssl-key :initform nil))
+  (:documentation "Describes an HTTPS listener."))
 
 (defun rotue-not-found (response)
   "Centralized function for handling the case of a missing router."
