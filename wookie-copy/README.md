@@ -36,8 +36,8 @@ For the brave
 
 (as:start-event-loop
   (lambda ()
-    (let ((acceptor (make-instance 'wookie-copy:acceptor :port 8090)))
-      (wookie-copy:start-server acceptor)))
+    (let ((listener (make-instance 'wookie-copy:listener :port 8090)))
+      (wookie-copy:start-server listener)))
   :catch-app-errors t)
 ```
 
