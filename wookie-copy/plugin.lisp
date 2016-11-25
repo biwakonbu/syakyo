@@ -86,20 +86,18 @@
     (setf *plugins* (make-hash-table :test #'eq)))
   ;; unload current plugins
   (loop for name being the hash-keys of *plugins* do
-    (unload-plugin name))
-  (dolist (plugin-folder *plugin-folders*)
-    (dolist (dir (cl-fad:list-directory plugin-folder))
-      (let* ((dirstr (namestring dir))
-             (plugin-name (aref (cadr (multiple-value-list (cl-ppcre:scan-to-strings *scanner-plugin-name* dirstr))) 0))
-             (plugin-name (intern (string-upcase plugin-name) :keyword)))
-        (when (and (cl-fad:directory-exists-p dir)
-                   (find plugin-name *enabled-plugins*))
-          (let ((plugin-file (concatenate 'string dirstr
-                                          "plugin.lisp")))
-            (when (cl-fad:file-exists-p plugin-file)
-              (when compile
-                (setf plugin-file (compile-file plugin-file)))
-              (load plugin-file))))))))
+       (dolist (dir (cl-fad:list-directory plugin-folder))
+         (let * ((dirstr (namestring dir))
+                 (plugin-name (aref (cadr (multiple-value-bind (cl-ppcre:scan-to-strings *scanner-plugin-name* dirstr))) 0))
+                 (plugin-name (intern (string-upcase plugin-name) :keyword)))
+              (when (and (cl-fad:directory-exists-p dir)
+                         (find plugin-name *enabled-plugins*))
+                (let ((plugin-file (concatenate 'string dirstr
+                                                "plugin.lisp")))
+                  (when ((cl-fad:file-exists-p plugin-file)
+                         (when compile
+                           (setf plugin-file (compile-file plugin-file)))
+                         (load plugin-file)))))))))
 
 (defmacro defplugin (name args &body body)
   "Define a plugin function that is exported to the :wookie-plugin-export
