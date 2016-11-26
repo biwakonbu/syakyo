@@ -11,6 +11,7 @@
                #:chunga
                #:http-parse
                #:puri
+               #:do-urlencode
                #:local-time
                #:cl-fad)
   :components
