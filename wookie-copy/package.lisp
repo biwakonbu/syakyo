@@ -1,5 +1,5 @@
 (defpackage :wookie-copy
-  (:use :cl :wookie-copy)
+  (:use :cl :wookie-copy-util)
   (:export #:*hide-version*
            #:*tmp-file-store*
 
@@ -16,14 +16,17 @@
            #:request-resource
            #:request-headers
            #:request-uri
-           #:request-http
            #:request-plugin-data
+           #:request-body-collback
+           #:request-http
            #:response
            #:response-headers
            #:with-chunking
            #:send-response
            #:start-response
            #:finish-response
+
+           #:load-plugins
 
            #:listener
            #:ssl-listener
