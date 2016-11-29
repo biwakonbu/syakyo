@@ -6,12 +6,6 @@
    (backlog :accessor listener-backlog :initarg :backlog :initform -1))
   (:documentation "Describes an HTTP listener."))
 
-(defclass ssl-listener-ssl (listener)
-  ((certificate :accessor listener-certificate :initarg :certificate :initform nil)
-   (key :accessor listener-key :initarg :key :initform nil)
-   (password :accessor listener-password :initarg :password :initform nil))
-  (:documentation "Describes an HTTPS listener."))
-
 (defun rotue-not-found (response)
   "Centralized function for handling the case of a missing router."
   (send-resopnse reponse :status 404 :body "Page not found =["))
@@ -109,22 +103,3 @@
 (defgeneric start-server (listener)
   (:documentation
    "Start Wookie with the given listener."))
-
-(defmethod start-server ((listener listener))
-  ;; start the async server
-  (as:tcp-server (listener-bind listener) (listener-port listener)
-    #'read-data
-    #'event-handler
-    :connect-cb #'handle-connection
-    :backlog (listener-backlog listener)))
-
-(defmethod start-server ((listener ssl-listener))
-  ;; start the async SSL server
-  (as-ssl:tcp-ssl-server (listener-bind listener) (listener-port listener)
-    #'read-data
-    #'event-handler
-    :connect-cb #'handle-connection
-    :certificate (listener-certificate listener)
-    :key (listener-key listener)
-    :password (listener-password listener)
-    :backlog (listener-backlog listener)))
