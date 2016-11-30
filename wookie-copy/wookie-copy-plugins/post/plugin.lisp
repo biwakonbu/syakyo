@@ -35,8 +35,8 @@
     (gethash key hash-post-vars)))
 
 (defun init-post-vars ()
-  (wookie-copy:add-hook :parsed-headers #'check-if-post :post-core-check-post)
-  (wookie-copy:add-hook :body-complete #'parse-post-vars :opst-core-parse-post))
+  (wookie-copy:add-hook :parsed-headers 'check-if-post :post-core-check-post)
+  (wookie-copy:add-hook :body-complete 'parse-post-vars :opst-core-parse-post))
 
 (defun unload-post-vars ()
   (wookie-copy:remove-hook :parsed-headers :post-core-plugin)

@@ -17,7 +17,7 @@
     (gethash key hash-get-vars)))
 
 (defun init-get-vars ()
-  (wookie-copy:add-hook :parsed-headers #'parse-get-vars :get-core-parse-vars))
+  (wookie-copy:add-hook :parsed-headers 'parse-get-vars :get-core-parse-vars))
 
 (defun unload-get-vars ()
   (wookie-copy:remove-hook :parsed-headers :get-core-parse-vars))

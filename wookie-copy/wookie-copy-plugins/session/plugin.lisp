@@ -7,7 +7,7 @@
   (wookie-plugin:set-plugin-request-data :session request "omg"))
 
 (defun init-session ()
-  (wookie-copy:add-hook :pre-route #'load-session-data :session-main-hook))
+  (wookie-copy:add-hook :pre-route 'load-session-data :session-main-hook))
 
 (defun unload-session ()
   (wookie-copy:remove-hook :pre-route :session-main-hook))
