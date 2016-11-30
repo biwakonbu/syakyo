@@ -110,7 +110,7 @@
 (defun unload-multipart-vars ()
   (wookie-copy:remove-hook :parsed-headers :multipart-core-plugin)
   (wookie-copy:remove-hook :body-chunk :multipart-core-parse-multipart)
-  (wookie-copy:add-hook :response-started :multipart-core-remove-tmp))
+  (wookie-copy:remove-hook :response-started :multipart-core-remove-tmp))
 
 (wookie-copy-plugin:register-plugin
  :multipart
