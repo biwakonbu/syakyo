@@ -1,5 +1,14 @@
 (in-package :wookie-copy)
 
+(define-condition response-error (wookie-copy-error)
+  ((response :initarg :response :reader response-error-response :initform nil))
+  (:report (lambda (c s) (format s "Response error: ~a" (response-error-response c))))
+  (:documentation "Describes a response error"))
+
+(define-condition response-already-sent (response-error) ()
+  (:report (lambda (c s) (format s "Response already sent: ~a" (response-error-response c))))
+  (:documentation "Triggered when a response is attempted more than once."))
+
 (defclass request ()
   ((method :accessor request-method :initarg :method :initform :get)
    (resource :accessor request-resource :initarg :resource :initform "/")
@@ -7,13 +16,15 @@
    (headers :accessor request-headers :initarg :headers :initform nil)
    (plugin-data :accessor request-plugin-data :initarg :plugin-data :initform nil)
    (body-callback :accessor request-body-callback :initarg :body-callback :initform nil)
-   (http :accessor request-http :initarg :http :initform nil))
+   (http :accessor request-http :initarg :http :initform nil)
+   (error-handlers :accessor request-error-handlers :initarg :error-handlers :initform nil)
+   (error-precedence :accessor request-error-precedence :initarg :error-precedence :initform nil))
   (:documentation "A class describung a request, passed to every route."))
 
 (defclass response ()
-  ((socket :accessor response-socket :initarg :socket :initform nil)
-   (headers :accessor response-headers :initarg :headers :initform nil)
-   (request :accessor response-request :initarg :request :initform nil))
+  ((headers :accessor response-headers :initarg :headers :initform nil)
+   (request :accessor response-request :initarg :request :initform nil)
+   (finishedp :accessor response-finishedp :initarg :finishedp :initform nil))
   (:documentation "A class holding information about a response to the client."))
 
 (defmacro with-chunking (request (chunk-data last-chunk-p) &body body)
@@ -53,12 +64,18 @@
 
    If :close is T, close the client connection after the response has been
    sent fully."
+  ;; make sure we haven't already responded to this request
+  (when (response-finished-p resopnse)
+    (error (make-instance 'response-already-sent :response response)))
+
+  ;; run the response hooks
   (run-hooks :response-started response (response-request response) status headers body)
   (let* ((headers (append (response-headers response) headers))
          (body-enc (when body (babel:string-to-octets body :encoding :utf-8)))
          (headers (if body
                       (append headers (list :content-length (length body-enc)))
                       headers))
+         (request (response-request response))
          (socket (response-socket response))
          (status-text (lookup-status-text status)))
     ;; make writing a single HTTP line a bit less pinful
@@ -84,7 +101,8 @@
     (when close
       (as:write-socket-data sockt nil
         :write-cb (lambda (socket)
-                    (as:close-socket socket))))))
+                    (as:close-socket socket))))
+    (setf (response-finished-p response) t)))
 
 (defun start-response (response &key (status 200) headers)
   "Start a response to the client, but do not specify body content (or close the
@@ -97,7 +115,8 @@
                  :status status
                  :headers (append headers
                                   (list :transfer-encoding "chunked")))
-  (let* ((async-stream (make-instance 'as:async-io-stream :socket (response-socket response)))
+  (let* ((request (response-request response))
+         (async-stream (make-instance 'as:async-io-stream :socket (response-socket response)))
          (chunked-stream (chunga:make-chunked-stream async-stream)))
     (setf (chunga:chunked-stream-output-chunking-p chunked-stream) t)
     chunked-stream))
@@ -112,3 +131,20 @@
       :write-cb (lambda (socket)
                   (when close
                     (as:close-socket socket))))))
+
+(defgeneric add-request-error-handler (request error-type handler)
+  (:documentation
+   "Adds the given handler to the request's erro handling table. The handler
+     will only be fired if the type of the error being triggered is a subtype of
+     the given error-type symbol.
+
+     An error handler is in the format
+       (lambda (event) ...)"))
+
+(defmethod add-request-error-handler ((request request) (error-type symbol) (handler function))
+  ;; setup an error table if none exists
+  (unless (hash-table-p (request-error-handlers request))
+    (setf (request-error- request) (make-hash-table :test #'eq)))
+  (let ((precedence (add-error-handler error-type handler :error-table (request-error-handlers request))))
+    (setf (request-error-precedence request) precedence)))
+
