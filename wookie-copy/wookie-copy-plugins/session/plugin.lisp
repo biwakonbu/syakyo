@@ -17,5 +17,5 @@
  '(:name "Wookie session handler"
    :authore "Andrew Lyon"
    :version "0.1.0")
- #'init-session
- #'unload-session)
+ 'init-session
+ 'unload-session)
