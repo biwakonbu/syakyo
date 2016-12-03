@@ -1,6 +1,6 @@
-(defpackage :wookie-copy-handler
+(defpackage :wookie-copy-core-session-handler
   (:use :cl))
-(in-package :wookie-session-handler)
+(in-package :wookie-copy-core-session-handler)
 
 (defun load-session-data (request response)
   (declare (ignore reponse))
@@ -16,6 +16,7 @@
  :session
  '(:name "Wookie session handler"
    :authore "Andrew Lyon"
-   :version "0.1.0")
+   :version "0.1.0"
+   :depends-on (:cookie))
  'init-session
  'unload-session)
