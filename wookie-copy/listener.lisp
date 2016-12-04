@@ -49,13 +49,10 @@
                       (as:tcp-socket ev)))))
     (funcall 'main-event-handler ev sock)))
 
-(defun handle-connection (sock)
-  "Handlers a new connection. Creates a bunch of closures that are passes into an
-   http-parse parser which decide amongst themselves, during different points in
-   the parsing, when to dispatch to the found router, when to send chunked
-   content to the route, etc."
-  ;; TODO pass client address info into :connect hook
-  (run-hooks :connect)
+(defun setup-parser (sock)
+  "Setup a parser on a socket. This can be called multiple times on the same
+   socket (usually at the end of a request) so that if another request comes in
+   on the same connect, we'll have reset state =]"
   (let* ((http (make-instance 'http-parse:http-request))
          (route nil) ;; holds the current route, filled in below once we get headers
          (route-dispatched nil)
@@ -133,6 +130,15 @@
                      :store-body t)))
         ;; attach parser to socket-data so we can deref it in the read callback
         (setf (getf (as:socket-data sock) :parser) parser)))))
+
+(defun handle-connection (sock)
+  "Serup a new connection. Creates a bunch of closures that are passes into an
+   http-parse parser which decide amongst themselves, during different points in
+   the parsing, when to dispatch to the found router, when to send chunked
+   content to the route, etc."
+  ;; TODO pass client address info into :connect hook
+  (run-hooks :connect)
+  (setup-parser sock))
 
 (defun read-data (sock data)
   "A simple read-cb handler that passed data to the HTTP parser attached to the
