@@ -156,4 +156,3 @@
     (setf (request-error- request) (make-hash-table :test #'eq)))
   (let ((precedence (add-error-handler error-type handler :error-table (request-error-handlers request))))
     (setf (request-error-precedence request) precedence)))
-
