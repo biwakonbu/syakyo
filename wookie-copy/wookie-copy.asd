@@ -15,12 +15,13 @@
                #:local-time
                #:cl-fad)
   :components
-  ((:file "util")
+  ((:file "config")
+   (:file "util" :depends-on ("config"))
    (:file "package" :depends-on ("util"))
-   (:file "config" :depends-on ("package"))
+   (:file "error-handler" :depends-on ("package"))
    (:file "route" :depends-on ("config"))
-   (:file "plugin" :depends-on ("config"))
-   (:file "hook" :depends-on ("config"))
+   (:file "plugin" :depends-on ("package"))
+   (:file "hook" :depends-on ("package"))
    (:file "request-response" :depends-on ("config"))
    (:file "listener" :depends-on ("request-response" "route" "plugin"))
    #-(or :wookie-no-ssl)

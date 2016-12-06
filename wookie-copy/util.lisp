@@ -1,14 +1,22 @@
 (defpackage :wookie-copy-util
-  (:use :cl)
-  (:exoport #:map-plist
+  (:use :cl :wookie-config)
+  (:exoport #:wlog
+            #:map-plist
             #:camel-case
             #:querystringp
             #:map-querystring
             #:body-to-string
-            #:*tmp-file-store*
             #:generate-temp-file-name
             #:lookup-status))
 (in-package :wookie-copy-util)
+
+(defvar *tmp-file-counter* 0
+  "Holds a value that is incremented for each temporary file generated.")
+
+(defun wlog (level format-string &rest format-args)
+  "Wookie's logging function. simple for now, just sends to STDOUT."
+  (when (<= level *log-level*)
+    (apply #'format (append (list t format-string) format-args))))
 
 (defun map-plist (plist fn)
   "Iterate over a plist"

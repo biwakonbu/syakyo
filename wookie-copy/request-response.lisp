@@ -35,8 +35,12 @@
    Chunk-data is a byte-array of data received as decoded chunked data comes in
    from the client, and last-chunk-p is a boolean indicating whether the last
    chunk from the request is being sent in."
-  `(setf (request-body-callback ,request) (lambda (,chunk-data ,last-chunk-p)
-                                            ,@body)))
+  `(setf (request-body-callback ,request)
+         (lambda (,chunk-data ,last-chunk-p)
+           (wlog +log-debug+ "(chunk) Got chunk (~a) ~a~%"
+                 ,last-chunk-p
+                 (babel:octets-to-string ,chunk-data))
+           ,@body)))
 
 (defun add-default-headers (headers)
   "Add a number of default headers to a headers plist. If one of the default
@@ -65,6 +69,9 @@
    If :close is T, close the client connection after the response has been
    sent fully."
   ;; make sure we haven't already responded to this request
+  (wlog +log-debug+ "(response) Send response ~a (status ~a) (close ~a) (headers ~s) (body-length ~a)~%"
+        response status close
+        headers (length body))
   (when (response-finished-p resopnse)
     (error (make-instance 'response-already-sent :response response)))
 
@@ -83,6 +90,7 @@
              (as:write-socket-data
               socket
               (apply #'format
+                     (wlog +log-debug+ "(response) Close socket ~a~%" response)
                      (append (list nil
                                    (concatenate 'string format-str "~c~c"))
                              (append format-args (list #\return #\newline)))))))
@@ -106,16 +114,22 @@
         ;; close the coket once ti's done writting
         (as:write-socket-data sockt nil
           :write-cb (lambda (socket)
+                      (wlog +log-debug+ "(response) Close socket ~a~%" response)
                       (as:close-socket socket)))
         ;; we sent a response, but aren't closing reset the parser so that if
         ;; another request in on the same socket, WE'LL BE READY!!!!!11one
-        (setup-parser socket))
+        (progn
+          (wlog +log-debug+ "(response) Reset parser: ~a~%" response)
+          (setup-parser socket)))
     (setf (response-finished-p response) t)))
 
 (defun start-response (response &key (status 200) headers)
   "Start a response to the client, but do not specify body content (or close the
    connection). Return a chunked (chunga) stream that can be used to send the
    body content bit by bit until finished by calling finish-response."
+  (wlog +log-debug+ "(response) Start chunked response ~a (status ~a) (headers ~s)~%"
+        response status headers)
+  ;; we need to add in our own transfer header, so remove all others
   (dolist (head-list (list headers (response-headers response)))
     (remf head-list :content-length)
     (remf head-list :transfer-encoding))
@@ -132,6 +146,7 @@
 (defun finish-response (chunked-stream &key close)
   "Given the stream passed back from start-response, finalize the response (send
    empty chunk) and close the connection, if specified."
+  (wlog +log-debug+ "(response) Finish response ~a (close ~a)~%" response close)
   (force-output chunked-stream)
   (let* ((async-stream (chunga:chunked-stream-stream chunked-stream))
          (socket (as:stream-socket async-stream)))
@@ -139,6 +154,7 @@
     (as:write-socket-data socket #(48 13 10 13 10) ;; "0\r\n\r\n"
       :write-cb (lambda (socket)
                   (when close
+                    (wlog +log-debug+ "(response) Close socket ~a~%" response)
                     (as:close-socket socket))))))
 
 (defgeneric add-request-error-handler (request error-type handler)
@@ -152,6 +168,7 @@
 
 (defmethod add-request-error-handler ((request request) (error-type symbol) (handler function))
   ;; setup an error table if none exists
+  (wlog +log-debug+ "(request) Add request error handler ~a: ~s~%" request error-type)
   (unless (hash-table-p (request-error-handlers request))
     (setf (request-error- request) (make-hash-table :test #'eq)))
   (let ((precedence (add-error-handler error-type handler :error-table (request-error-handlers request))))

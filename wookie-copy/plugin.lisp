@@ -5,7 +5,7 @@
   (:use :cl))
 
 (defpackage :wookie-copy-plugin
-  (:use :cl :wookie-copy)
+  (:use :cl :wookie-copy :wookie-copy-util)
   (:export #:register-plugin
            #:set-plugin-request-data
            #:get-plugin-request-data
@@ -57,6 +57,7 @@
 
    Also unloads any current plugins that depend on this plugin. Does this
    recursively so all depencies are always resolved."
+  (wlog +log-debug+ "(plugin) unload plugin ~s~%" plugin-name)
   ;; unload the plugin
 
   (let ((plugin (gethash plugin-name *plugins*)))
@@ -90,6 +91,7 @@
    storing the data into the request's plugin data. This function allows this by
    taking the plugin-name (keyword), request object passed into the route, and
    the data to store."
+  (wlog +log-debug+ "(plugin) Set plugin data ~s: ~a~%" plugin-name data)
   (unless (hash-table-p (request-plugin-data request))
     (setf (request-plugin-data request) (make-hash-table :test #'eq)))
   (setf (gethash plugin-name (request-plugin-data request)) data))
@@ -99,6 +101,8 @@
    plugin."
   (let ((data (request-plugin-data request)))
     (when (hash-table-p data)
+      (wlog +log-debug+ "(plugin) Resolve ~s dependencies: ~s~%"
+                         (getf plugin-entry :name) dependencies)
       (gethash plugin-name data))))
 
 (defun resolve-dependencies ()
@@ -150,10 +154,13 @@
       (when (cl-fad:directory-exists-p dir)
         (let ((plugin-file (concatenate 'string dirstr
                                         "plugin.lisp")))
-          (when ((cl-fad:file-exists-p plugin-file)
-                 (when compile
-                   (setf plugin-file (compile-file plugin-file)))
-                 (load plugin-file)))))))
+          (if (cl-fad:file-exists-p plugin-file)
+              (progn
+                (wlog +log-debug+ "(plugin) Loading ~a~%" plugin-file)
+                (when compile
+                  (setf plugin-file (compile-file plugin-file)))
+                (load plugin-file))
+              (wlog +log-notice+ "(pliugin) Mission ~a~%" plugin-file))))))
   (resolve-dependencies))
 
 (defmacro defplugin (name args &body body)

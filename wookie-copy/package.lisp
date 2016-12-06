@@ -1,6 +1,16 @@
 (defpackage :wookie-copy
-  (:use :cl :wookie-copy-util)
-  (:export #:*hide-version*
+  (:use :cl :wookie-copy-config :wookie-copy-util)
+  (:export #:+log-emerg+
+           #:+log-alert+
+           #:+log-crit+
+           #:+log-err+
+           #:+log-warning+
+           #:+log-notice+
+           #:+log-info+
+           #:+log-debug+
+           #:*log-level*
+
+           #:*hide-version*
            #:*tmp-file-store*
 
            #:wookie-error

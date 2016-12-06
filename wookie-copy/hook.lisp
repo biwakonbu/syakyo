@@ -4,12 +4,16 @@
 
 (defun clear-hooks (&optional hook)
   "Clear all hooks (default) or optionally a specific hook type."
+  (wlog +log-debug+ "(hook) Clearing ~a~%" (if hook
+                                               (format nil "hook ~s~%" hook)
+                                               "all hooks"))
   (if hook
       (setf (gethash hook *hooks*) nil)
       (setf *hooks* (make-hash-table :size 10 :test #'eq))))
 
 (defun run-hooks (hook &rest args)
   "Run all hooks of a specific type."
+  (wlog +log-debug+ "(hook) Run ~s (~a)~%" hook args)
   (let ((hooks (gethash hook *hooks*)))
     (dolist (hook hooks)
       (apply (getf hook :function) args))))
@@ -24,6 +28,9 @@
 (defun remove-hook (hook function/hook-name)
   "Remove a hook from a set of hooks by its function reference OR by the hook's
    name given at add-hook."
+  (wlog +log-debug+ "(hook) Adding hook ~s~%" hook (if hook-name
+                                                       (format nil "(~s)" hookg-name)
+                                                       ""))
   (when (and function/hook-name
              (gethash hook *hooks*))
     (setf (gethash hook *hooks*) (remove-if (lambda (hook)

@@ -8,6 +8,7 @@
 
 (defmethod start-server ((listener ssl-listener))
   ;; start the async SSL server
+  (wlog +log-debug+ "(read) ~a: ~a~%" sock (babel:octets-to-string data))
   (as-ssl:tcp-ssl-server (listener-bind listener) (listener-port listener)
     'read-data
     'listener-event-handler
