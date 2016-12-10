@@ -6,6 +6,7 @@
             #:querystringp
             #:map-querystring
             #:body-to-string
+            #:getf-reverse
             #:generate-temp-file-name
             #:lookup-status))
 (in-package :wookie-copy-util)
@@ -16,7 +17,10 @@
 (defun wlog (level format-string &rest format-args)
   "Wookie's logging function. simple for now, just sends to STDOUT."
   (when (<= level *log-level*)
-    (apply #'format (append (list t format-string) format-args))))
+    (let ((output (if *log-output*
+                      *log-output*
+                      t)))
+      (apply #'format (append (list output format-string) format-args)))))
 
 (defun map-plist (plist fn)
   "Iterate over a plist"
@@ -81,6 +85,15 @@
         (babel:octets-to-string body-bytes :encoding charset)
       (t ()
         (babel:octets-to-string body-bytes :encoding :iso-8859-1)))))
+
+(defun getf-reverse (plist key)
+  "Like getf, except the VALUE comes before the KEY:
+    '(:value1 :key1 :value2 :key2)
+   Allows reverse lookups in plists without duplicating structures."
+  (dotimes (i (length plist))
+    (when (eq key (cadr plist))
+      (return-from getf-reverse (car plist)))
+    (setf plist (cddr plist))))
 
 (defvar *tmp-file-store* (asdf:system-relative-pathname :wookie-copy #p"upload-tmp/")
   "stores the path to where uploads/temporary files go.")
