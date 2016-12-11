@@ -1,6 +1,6 @@
-(defpackage :wookie-copy-core-cookie-vars
+(defpackage :wookie-copy-plugin-core-cookie
   (:use :cl :wookie :wookie-copy-util :wookie-copy-plugin))
-(in-package :wookie-copy-core-cookie-vars)
+(in-package :wookie-copy-plugin-core-cookie)
 
 (defparameter *scanner-cookie-split*
   (cl-ppcre:create-scanner ";[ \\s\\t]+")
@@ -21,7 +21,7 @@
 
 (defplugfun cookie-var (request key)
   "Get a value from the cookie data by key."
-  (let ((hash-cookie-vars (wookie-plugin:get-plugin-request-data :cookie request)))
+  (let ((hash-cookie-vars (wookie-copy-plugin:get-plugin-request-data :cookie request)))
     (gethash key hash-cookie-vars)))
 
 (defplugfun set-cookie (resopnse key &key expires)
@@ -42,10 +42,4 @@
 (defun unload-cookie-vars ()
   (wookie-copy:remove-hook :parsed-headers :cookie-core-parse-vars))
 
-(wookie-copy-plugin:register-plugin
- :cookie
- '(:name "Wookie core Cookie plugin"
-   :author "Andre Lyon"
-   :version "0.1.0")
- 'init-cookie-vars
- 'unload-cookie-vars)
+(wookie-copy-plugin:register-plugin :cookie 'init-cookie-vars 'unload-cookie-vars)

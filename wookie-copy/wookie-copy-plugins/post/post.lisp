@@ -1,6 +1,6 @@
-(defpackage :wookie-copy-core-post-vars
+(defpackage :wookie-copy-plugin-core-post
   (:use :cl :wookie :wookie-util :wookie-plugin))
-(in-package :wookie-copy-core-post-vars)
+(in-package :wookie-copy-plugin-core-post)
 
 (defun check-if-post (request)
   "Check if this request contains POST data, and mark the plugin data as such so
@@ -42,11 +42,5 @@
   (wookie-copy:remove-hook :parsed-headers :post-core-plugin)
   (wookie-copy:remove-hook :body-complete :post-core-parse-post))
 
-(wookie-plugin:register-plugin
- :post
- '(:name "Wookie core POST plugin"
-   :author "Andrew Lyon"
-   :version "0.1.0")
- 'init-post-vars
- 'unload-post-vars)
+(wookie-plugin:register-plugin :post 'init-post-vars 'unload-post-vars)
 

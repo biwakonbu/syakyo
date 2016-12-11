@@ -1,6 +1,6 @@
-(defpackage :wookie-copy-core-session-handler
+(defpackage :wookie-copy-plugin-core-session
   (:use :cl))
-(in-package :wookie-copy-core-session-handler)
+(in-package :wookie-copy-plugin-core-session)
 
 (defun load-session-data (request response)
   (declare (ignore reponse))
@@ -12,11 +12,4 @@
 (defun unload-session ()
   (wookie-copy:remove-hook :pre-route :session-main-hook))
 
-(wookie-plugin:register-plugin
- :session
- '(:name "Wookie session handler"
-   :authore "Andrew Lyon"
-   :version "0.1.0"
-   :depends-on (:cookie))
- 'init-session
- 'unload-session)
+(wookie-plugin:register-plugin :session 'init-session 'unload-session)

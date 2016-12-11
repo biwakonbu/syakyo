@@ -1,6 +1,6 @@
-(defpackage :wookie-core-get-vars
-  (:use :cl :wookie-core-get-vars))
-(in-package :wookie-core-get-vars)
+(defpackage :wookie-copy-plugin-core-get
+  (:use :cl :wookie-copy-util :wookie-copy-plugin)
+(in-package :wookie-copy-plugin-core-get)
 
 (defun parse-get-vars (request)
   "Grab GET data from parsed URI querystring and set into a hash table stored
@@ -22,10 +22,4 @@
 (defun unload-get-vars ()
   (wookie-copy:remove-hook :parsed-headers :get-core-parse-vars))
 
-(wookie-copy-plugin:register-plugin
- :get
- '(:name "Wookie core GET plugin"
-   :author "Andrew Lyon"
-   :version "0.1.0")
- 'init-get-vars
- 'unload-get-vars)
+(wookie-copy-plugin:register-plugin :get 'init-get-vars 'unload-get-vars)
