@@ -2,9 +2,12 @@
   (:use :cl :wookie-copy :wookie-copy-util :wookie-copy-plugin))
 (in-package :wookie-copy-core-multipart-vars)
 
-(defun check-if-multipart (request)
-  "Check if this request contains multipart data, and mark the plugin data as
-   such so once we have body data we know whether or not to try and parse it."
+(defun setup-multipart-parse (request)
+  "arses multipart form data (if present). Stores multipart form data in a hash
+   table, and stores multipart file data into temporary files (and stores data
+   describing the file in a separate hash table). File storage is not ideal for
+   async because it blocks, but without libuv or some kind of thread pool this
+   the only way to do it without completely exhausting memory."
   (let ((headers (request-headers request)))
     (when (search "multipart/form-data;" (getf headers :content-type))
       (let* ((hash-form-vars (make-hash-table :test #'equal))
@@ -102,7 +105,7 @@
     (gethash field-name hash-form-vars)))
 
 (defun init-multipart-vars ()
-  (wookie-copy:add-hook :parsed-headers 'check-if-multipart :multipart-core-check-multipart)
+  (wookie-copy:add-hook :parsed-headers 'setup-multipart-parse :multipart-core-check-multipart)
   (wookie-copy:add-hook :body-chunk 'parse-multipart-vars :multipart-core-parse-multipart)
   (wookie-copy:add-hook :response-started 'remove-tmp-files :multipart-core-remove-tmp))
 
