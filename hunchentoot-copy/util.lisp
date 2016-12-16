@@ -45,3 +45,9 @@ TEST."
           (starts-with-p seq subseq :test test))
         subseq-list))
 
+(defun create-random-string (&optional (n 10) (base 10))
+  "Returns a random number \(as a string) with base BASE and N digits."
+  (with-output-to-string (s)
+    (dotimes (i n)
+      (format s "~VR" base
+              (random base *the-random-state*)))))
