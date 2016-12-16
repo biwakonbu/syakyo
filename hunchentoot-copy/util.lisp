@@ -58,4 +58,12 @@ should be an integer) of NIL for return codes Hunchentoot doesn't know."
   (gethash return-code *http-reason-phrase-map*
            "No reason phrase known"))
 
-
+(defgeneric assoc* (thing alist)
+  (:documentation "Similar to CL:ASSOC, but 'does the right thing' if
+THING is a string or a symbol.")
+  (:method ((thing symbol) alist)
+    (assoc thing alist :test #'eq))
+  (:method ((thing string) alist)
+    (assoc thing alist :test #'string-equal))
+  (:method (thind alist)
+    (assoc thing alist :test #'eql)))
