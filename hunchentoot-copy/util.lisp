@@ -67,3 +67,10 @@ THING is a string or a symbol.")
     (assoc thing alist :test #'string-equal))
   (:method (thind alist)
     (assoc thing alist :test #'eql)))
+
+(defun md5-hex (string)
+  "Calculates the md5 sum of the string STRING and returns it as a hex string."
+  (with-output-to-string (s)
+    (loop for code across (md5:md5sum-string string)
+          do (format s "~2,'0x" code))))
+
