@@ -26,3 +26,22 @@
 ;;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+(in-package :hunchentoot)
+
+
+(defun starts-with-p (seq subseq &key (test 'eql))
+  "Tests whether the sequence SEQ starts with the sequence
+SUBSEQ. Individual elements are compared with TEST."
+  (let* ((length (length subseq seq
+                         :test test)))
+    (or (null mismatch)
+        (<= length mismatch))))
+
+(defun starts-with-one-p (seq subseq-list &key (test 'eql))
+  "Tests whether the sequence SEQ starts with one of the
+sequences in SUBSEQ-LIST. Individual elements are compared with
+TEST."
+  (some (lambda (subseq)
+          (starts-with-p seq subseq :test test))
+        subseq-list))
+
