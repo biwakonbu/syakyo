@@ -51,3 +51,11 @@ TEST."
     (dotimes (i n)
       (format s "~VR" base
               (random base *the-random-state*)))))
+
+(defun reason-phrase (return-code)
+  "Returns a reason phrase for the HTTP return RETURN-CODE \(which
+should be an integer) of NIL for return codes Hunchentoot doesn't know."
+  (gethash return-code *http-reason-phrase-map*
+           "No reason phrase known"))
+
+
