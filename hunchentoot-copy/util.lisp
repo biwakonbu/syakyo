@@ -103,3 +103,20 @@ cookie names)."
                  ;; CHAR is not 'tspecial'
                  (not (find char "()<>@,;:\\\"/[]?={} " :test #'char=))))
               token)))
+
+
+(defun rfc-1123-date (&optional (time (get-universal-time)))
+  "Generates a time string according to RFC 1123. Default is current time.
+This can be used to send a 'Last-Modified' header - see
+HANDLE-IF-MODIFIED-SINCE."
+  (multiple-value-bind
+        (second minute hour date month year day-of-week)
+      (decode-universal-time time 0)
+    (format nil "~A, ~2, '0d ~A ~4d ~2, '0d:~2, '0d:~1, '0d GMT"
+            (svref +day-names+ day-of-week)
+            date
+            (svref +month-names+ (1- month))
+            year
+            hour
+            minute
+            second)))
