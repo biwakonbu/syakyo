@@ -32,8 +32,9 @@
 (defun starts-with-p (seq subseq &key (test 'eql))
   "Tests whether the sequence SEQ starts with the sequence
 SUBSEQ. Individual elements are compared with TEST."
-  (let* ((length (length subseq seq
-                         :test test)))
+  (let* ((length (length subseq))
+         (mismatch (mismatch subseq seq
+                             :test test)))
     (or (null mismatch)
         (<= length mismatch))))
 
