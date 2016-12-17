@@ -38,7 +38,7 @@ SUBSEQ. Individual elements are compared with TEST."
     (or (null mismatch)
         (<= length mismatch))))
 
-(defun starts-with-one-p (seq subseq-list &key (test 'eql))
+(defun starts-with-one-of-p (seq subseq-list &key (test 'eql))
   "Tests whether the sequence SEQ starts with one of the
 sequences in SUBSEQ-LIST. Individual elements are compared with
 TEST."
