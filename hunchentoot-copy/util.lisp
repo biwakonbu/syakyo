@@ -90,3 +90,16 @@ output."
                  ((#\') (write-string "&#039;" out))
                  ((#\&) (write-string "&amp;" out))
                  (otherwise (write-char char out)))))))
+
+(defun http-token-p (token)
+  "This function tests whether OBJECT is a non-empty string which is a
+TOKEN according to RFC 2068 \(i.e. whether it may be used for, say,
+cookie names)."
+  (and (stringp token)
+       (plusp (length token))
+       (every (lambda (char)
+                (and ;; CHAR is US-ASCII but not control character or ESC
+                 (< 31 (char-code char) 127)
+                 ;; CHAR is not 'tspecial'
+                 (not (find char "()<>@,;:\\\"/[]?={} " :test #'char=))))
+              token)))
