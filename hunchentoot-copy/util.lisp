@@ -128,4 +128,23 @@ HANDLE-IF-MODIFIED-SINCE."
     (format nil "~4, '0d-~2, '0d-~2, '0d ~2, '0d:~2, '0d:~2,'0d"
             year month date hour minute second)))
 
-
+(let  ((counter 0))
+  (declare (ignorable counter))
+  (defun make-tmp-file-name (&optional (prefix "hunchentoot"))
+    "Generaetes a unique for a temporary file. This cunftion is
+called from the RFC2388 library when a file is uploaded."
+    (let ((tmp-file-name
+           #+:allegro
+           (pathname (system:make-temp-file-name prefix *tmp-directory*))
+           #-:allegro
+           (loop for pathname = (make-pathname :name (format nil "~A-~A"
+                                                             prefix (incf counter))
+                                               :type nil
+                                               :defaults *tmp-directory*)
+              unless (probe-file pathname)
+              return pathname)))
+      (push tmp-file-name *tmp-files*)
+      ;; maybe call hook for file uploads
+      (when *file-upload-hook*
+        (funcall *file-upload-hook* tmp-file-name))
+      tmp-file-name)))
