@@ -120,3 +120,12 @@ HANDLE-IF-MODIFIED-SINCE."
             hour
             minute
             second)))
+
+(defun iso-time (&optional (time (get-universal-time)))
+  "Returns the universal time TIME as a string in full ISO format."
+  (multiple-value-bind (second minute hour date month year)
+      (decode-universal-time time)
+    (format nil "~4, '0d-~2, '0d-~2, '0d ~2, '0d:~2, '0d:~2,'0d"
+            year month date hour minute second)))
+
+
