@@ -148,3 +148,16 @@ called from the RFC2388 library when a file is uploaded."
       (when *file-upload-hook*
         (funcall *file-upload-hook* tmp-file-name))
       tmp-file-name)))
+
+(defun quote-string (string)
+  "Quotes string according to RFC 2616's definition of `quoted-string'"
+  (with-output-to-string (out)
+    (with-input-from-string (in string)
+      (loop for char = (read-char in nil nil)
+            while char
+            unless (or (char< char #\Space)
+                       (char= char #\Rubout))
+              do (case char
+                   ((#\\) (write-string "\\\\" out))
+                   ((#\") (write-string "\\\"" out))
+                   (otherwise (write-char char out)))))))
