@@ -161,3 +161,22 @@ called from the RFC2388 library when a file is uploaded."
                    ((#\\) (write-string "\\\\" out))
                    ((#\") (write-string "\\\"" out))
                    (otherwise (write-char char out)))))))
+
+(defmacro upgrade-vector (vector new-type &key converter)
+  "Returns a vector with the same length and the same elements as
+VECTOR \(a variable holding a vector) but having element type
+NEW-TYPE.  If CONVERTER is not NIL, it should designate a function
+which will be applied to each element of VECTOR before the result is
+stored in the new vector.  The resulting vector will have a fill
+pointer set to its end.
+The macro also uses SETQ to store the new vector in VECTOR."
+  `(setq ,vector
+         (loop with length = (length ,vector)
+            with new-vector = (make-array length
+                                          :element-type ,new-type
+                                          :fill-pointer length)
+            for i below length
+            do (setf (aref new-vector i) ,(if converter
+                                              `(funcall ,converter (aref ,vector i))
+                                              `(aref ,vector i)))
+              finally (return new-vector))))
