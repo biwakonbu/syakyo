@@ -169,6 +169,7 @@ NEW-TYPE.  If CONVERTER is not NIL, it should designate a function
 which will be applied to each element of VECTOR before the result is
 stored in the new vector.  The resulting vector will have a fill
 pointer set to its end.
+
 The macro also uses SETQ to store the new vector in VECTOR."
   `(setq ,vector
          (loop with length = (length ,vector)
