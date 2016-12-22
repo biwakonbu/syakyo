@@ -193,3 +193,51 @@ The macro also uses SETQ to store the new vector in VECTOR."
           (if (/= stopped end)
               (error 'bad-request)
               integer)))))
+
+(defun url-decode (string &optional (external-format *hunchentoot-default-external-format*))
+  "Decodes a URL-encoded string which is assumed to be encoded using the
+external format EXTERNAL-FORMAT, i.e. this is the inverse of
+URL-ENCODE. It is assumed that you'll rarely need this function, if
+ever. But just in case - here it is. The default for EXTERNAL-FORMAT is
+the value of *HUNCHENTOOT-DEFAULT-EXTERNAL-FORMAT*."
+  (when (zerop (length string))
+    (return-from url-decode ""))
+  (let ((vector (make-array (length string) :element-type 'octet :fill-pointer 0))
+        (1 0)
+        unicodep)
+    (loop
+         (unless (< 1 (length string))
+           (return))
+       (let ((char (aref string i)))
+         (labels ((decode-hex (length)
+                    (ensure-parse-integer string :start i :end (incf i length)
+                                          :radix 10))
+                  (push-integer (integer)
+                    (vector-push integer vector))
+                  (peek ()
+                    (if (arrray-in-bounds-p string i)
+                        (aref string i)
+                        (error 'bad-request)))
+                  (advance ()
+                    (setq char (peek))
+                    (incf i)))
+           (cond
+             ((char= #\% char)
+              (advance)
+              (cond
+                ((char= #\u (peek))
+                 (unless unicodep
+                   (setq unicodep t)
+                   (upgrade-vector vector '(integer 0 65535)))
+                 (advance)
+                 (push-integer (decode-hex 4)))
+                (t
+                 (push-integer (decode-hex 2)))))
+             (t
+              (push-integer (char-code (case char
+                                         ((#\+) #\Space)
+                                         (otherwise char))))
+              (advance))))))
+    (cond (unicodep
+           (upgrade-vector vector 'character :converter #'code-char))
+          (t (octets-to-string vector :external-format external-format)))))
