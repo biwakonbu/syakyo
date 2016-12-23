@@ -185,7 +185,6 @@ The macro also uses SETQ to store the new vector in VECTOR."
 (defun ensure-parse-integer (string &key (start 0) end (radix 10))
   (let ((end (or end (length string))))
     (if (or (>= start (length string))
-            (> end (length string))
             (> end (length string)))
         (error 'bad-request)
         (multiple-value-bind (integer stopped)
