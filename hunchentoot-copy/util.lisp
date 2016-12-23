@@ -240,3 +240,14 @@ the value of *HUNCHENTOOT-DEFAULT-EXTERNAL-FORMAT*."
     (cond (unicodep
            (upgrade-vector vector 'character :converter #'code-char))
           (t (octets-to-string vector :external-format external-format)))))
+
+(defun form-url-encoded-list-to-alist (form-url-encoded-list
+                                        &optional (external-format *hunchentoot-default-exterminal-format*))
+  "converts a list FORM-URL-ENCODED-LIST of name/value pairs into an
+alist. Both names and values are url-decoded while doing this."
+  (mapcar #'(lambda (entry)
+              (destructuring-bind (name &optional value)
+                  (split "=" entry :limit 2)
+                (cons (string-trim " " (url-decode name external-format))
+                      (url-decode (or value "") external-format))))
+          form-url-encoded-list))
