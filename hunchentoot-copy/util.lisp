@@ -260,3 +260,22 @@ alist. Both names and values are url-decoded while doing this."
                   (split "=" entry :limit 2)
                 (cons (string-trim " " name) (or value ""))))
           cookies))
+
+(defun url-encode (string &optional (external-format *hunchentoot-default-external-format*))
+  "URL-encodes a string using the external format EXTERNAL-FORMAT. The
+default for EXTERNAL-FORMAT is the value of
+*HUNCHENTOOT-DEFAULT-EXTERNAL-FORMAT*."
+  (with-output-to-string (s)
+    (loop for c across string
+       for index from 0
+       do (cond ((or (char<= #\0 c #\9)
+                     (char<= #\a c #\z)
+                     (char<= #\A c #\Z)
+                     ;; none that there's no comma in there - because of cookies
+                     (find c "$-_.!*'()" :test #'char=))
+                 (write-char c s))
+                (t (loop for octet across (string-to-octets string
+                                                            :start index
+                                                            :end (1+ index)
+                                                            :external-format external-format)
+                        do (format s "%~2, '0x" octet)))))))
