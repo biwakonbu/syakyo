@@ -251,3 +251,12 @@ alist. Both names and values are url-decoded while doing this."
                 (cons (string-trim " " (url-decode name external-format))
                       (url-decode (or value "") external-format))))
           form-url-encoded-list))
+
+(defun cookies-to-alist (cookies)
+  "Converts a list of cookies of the form \"key=value\" to an alist. No
+  character set processing is done."
+  (mapcar #'(lambda (entry)
+              (destructuring-bind (name &optional value)
+                  (split "=" entry :limit 2)
+                (cons (string-trim " " name) (or value ""))))
+          cookies))
