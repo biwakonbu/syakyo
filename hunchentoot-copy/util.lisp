@@ -299,3 +299,18 @@ to be the corresponding header value as a string."
               (when (string-equal type "text")
                 charset)))
         (value type subtype charset))))
+
+(defun address-string ()
+  "Returns a string with information about Hunchentoot suitable for
+inclusion in HTML output."
+  (flet ((escape-for-html (arg)
+           (if args(escape-for-html arg)
+               arg)))
+    (format nil "<address><a href='http://weitz.de/hunchentoot/'>Hunchentoot ~A</a> <a href='~A'>(~A ~A)</a>~@[ at ~A~:[ (port ~D)~;~]~]</address>"
+            *hunchentoot-version*
+            *implementation-link*
+            (escape-for-html (lisp-implementation-type))
+            (escape-for-html (lisp-implementation-version))
+            (escape-for-html (or (host *request*) ""))
+            (scan ":\\d+$" (or (host *request*) ""))
+            (acceptor-port *acceptor*))))
