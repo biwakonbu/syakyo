@@ -300,6 +300,27 @@ to be the corresponding header value as a string."
                 charset)))
         (value type subtype charset))))
 
+(defun keep-alive-p (request)
+  "Returns a true value unless the incoming request's headers or the
+server's PERSISTENT-CONNECTIONS-P setting obviate a keep-alive reply.
+The second return value denotes whether the client has explicitly
+asked for a persistent connection."
+  (let ((connection-values
+         ;; the header might consist of different values separated by commas
+         (when-let (connection-header (header-in :connection request))
+           (split "\\s*,\\s*" connection-header))))
+    (flet ((connection-value-p (value)
+             "Checks whether the string VALUE is one of the
+values of the `Connection' header."
+             (member value connection-values :test #'string-equal)))
+      (let ((keep-alive-requested-p (connection-value-p "keep-alive")))
+        (values (and (acceptor-persistent-connections-p *acceptor*)
+                     (or (and (eq (server-protocol request) :http/1.1)
+                              (not (connection-value-p "close")))
+                         (and (eq (server-protocol request) :http/1.0)
+                              keep-alive-requested-p)))
+                keep-alive-requested-p)))))
+
 (defun address-string ()
   "Returns a string with information about Hunchentoot suitable for
 inclusion in HTML output."
