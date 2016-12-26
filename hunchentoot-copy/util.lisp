@@ -279,6 +279,7 @@ default for EXTERNAL-FORMAT is the value of
                                                             :end (1+ index)
                                                             :external-format external-format)
                         do (format s "%~2, '0x" octet)))))))
+
 (defun parse-content-type (content-type-header)
   "Reads and parses a `Content-Type' header and returns it as three
 values - the type, the subtype, and the requests' character set as
