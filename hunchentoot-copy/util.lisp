@@ -343,3 +343,8 @@ inclusion in HTML output."
 *HUNCHENTOOT-STREAM* - note that this will return NIL if the stream
 not a chunked stream."
   (chunked-stream-input-shunking-p *hunchentoot-stream*))
+
+(defun ssl-p (&optional (acceptor *acceptor*))
+  "whether the current connection to the client is secure. See
+ACCEPTOR-SSL-P."
+  (acceptor-ssl-p acceptor))
