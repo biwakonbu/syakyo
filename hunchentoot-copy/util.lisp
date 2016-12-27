@@ -286,20 +286,21 @@ values - the type, the subtype, and the requests' character set as
 specified in the 'charset' parameter in the header, if there is one
 and if the content type is \"text\".  CONTENT-TYPE-HEADER is supposed
 to be the corresponding header value as a string."
-  (with-character-stream-semantics
-      (let* ((*current-error-message* (format nil "Corrupted Content-Type header ~S:" content-type-header))
-             (type (read-token stream))
-             (subtype (if (eql #\/ (read-char* stream nil))
-                          (read-token stream)
-                          (return-from parse-content-type
-                            ;; try to return somethind meaningful
-                            (values "application" "octet-stream" nil))))
-             (parameters (read-name-value-pairs stream))
-             (charset (cdr (assoc "charset" parameters :test #'string=)))
-             (charset
-              (when (string-equal type "text")
-                charset)))
-        (values type subtype charset))))
+  (with-input-from-sequence (stream (map 'list 'char-code content-type-header))
+    (with-character-stream-semantics
+        (let* ((*current-error-message* (format nil "Corrupted Content-Type header ~S:" content-type-header))
+               (type (read-token stream))
+               (subtype (if (eql #\/ (read-char* stream nil))
+                            (read-token stream)
+                            (return-from parse-content-type
+                              ;; try to return somethind meaningful
+                              (values "application" "octet-stream" nil))))
+               (parameters (read-name-value-pairs stream))
+               (charset (cdr (assoc "charset" parameters :test #'string=)))
+               (charset
+                (when (string-equal type "text")
+                  charset)))
+          (values type subtype charset))))
 
 (defun keep-alive-p (request)
   "Returns a true value unless the incoming request's headers or the
