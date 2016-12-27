@@ -337,3 +337,9 @@ inclusion in HTML output."
             (escape-for-html (or (host *request*) ""))
             (scan ":\\d+$" (or (host *request*) ""))
             (acceptor-port *acceptor*))))
+
+(defun input-chunking-p ()
+  "Whether input chunking is currently switched on for
+*HUNCHENTOOT-STREAM* - note that this will return NIL if the stream
+not a chunked stream."
+  (chunked-stream-input-shunking-p *hunchentoot-stream*))
