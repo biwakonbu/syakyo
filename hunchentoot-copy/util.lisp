@@ -334,6 +334,7 @@ inclusion in HTML output."
             *implementation-link*
             (escape-for-html (lisp-implementation-type))
             (escape-for-html (lisp-implementation-version))
+            (escape-for-html (or (host *request*) (acceptor-address *acceptor*)))
             (escape-for-html (or (host *request*) ""))
             (scan ":\\d+$" (or (host *request*) ""))
             (acceptor-port *acceptor*))))
