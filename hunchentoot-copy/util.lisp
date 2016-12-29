@@ -300,7 +300,7 @@ to be the corresponding header value as a string."
                (charset
                 (when (string-equal type "text")
                   charset)))
-          (values type subtype charset))))
+          (values type subtype charset)))))
 
 (defun keep-alive-p (request)
   "Returns a true value unless the incoming request's headers or the
