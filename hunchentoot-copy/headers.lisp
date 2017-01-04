@@ -53,3 +53,13 @@ writes them directly to the client as an HTTP header line.")
     (write-header-line key (write-to-string number :escape nil :readably nil :base 10) stream))
   (:method (key value stream)
     (write-header-line key (princ-to-string value) stream)))
+
+(defun maybe-add-charset-to-content-type-header (content-type external-format)
+  "Given the contents of a CONTENT-TYPE header, add a charset=
+  attribute describing the given EXTERNAL-FORMAT if no charset=
+  attribute is already present and the content type is a text content
+  type.  Returns the augmented content type."
+  (if (and (cl-ppcre:scan "(?i)^text" contet-type)
+           (not (cl-ppcre:scan "(?i);\\s*scharset=" content-type)))
+      (format nil "~A; charset=~(~A~)" content-type (flex:external-format-name external-format))
+      content-type))
