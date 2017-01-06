@@ -63,3 +63,95 @@ writes them directly to the client as an HTTP header line.")
            (not (cl-ppcre:scan "(?i);\\s*scharset=" content-type)))
       (format nil "~A; charset=~(~A~)" content-type (flex:external-format-name external-format))
       content-type))
+
+(defun start-output (return-code &optional (content nil content-provided-p))
+  "Sends all headers and maybe the content body to
+*HUNCHENTOOT-STREAM*.  Returns immediately and does nothing if called
+more than once per request.  Called by PROCESS-REQUEST and/or
+SEND-HEADERS.  The RETURN-CODE argument represents the integer return
+code of the request.  The corresponding reason phrase is determined by
+calling the REASON-PHRASE function.  The CONTENT provided represents
+the body data to send to the client, if any.  If it is not specified,
+no body is written to the client.  The handler function is expected to
+directly write to the stream in this case.
+Returns the stream that is connected to the client."
+  (let* ((chunkdp (and (acceptor-output-chunking-p *acceptor*)
+                       (eq (server-protocol *request*) :http/1.1)
+                       ;; only turn chunking on if the content
+                       ;; length is unknown at this point....
+                       (null (or (content-length*) content-provided-p))))
+         (request-method (request-method *request*))
+         (head-request-p (eq request-method :head))
+         content-modified-p)
+    (multiple-value-bind (keep-alive-p keep-alive-requested-p)
+        (keep-alive-p *request*)
+      (when keep-alive-p
+        (setq keep-alive-p
+              ;; use keep-alive if there's a way for the client to
+              ;; determine when all content is sent (of if there
+              ;; is no content)
+              (or chunkdp
+                  head-request-p
+                  (eql (return-code*) +http-not-modified+)
+                  (content-length*)
+                  content)))
+      ;; now set headers for keep-alive and chunking
+      (when chunkedp
+        (setf (header-out :transfer-encoding) "chunked"))
+      (cond (keep-alive-p
+             (setf *finish-processing-socket* nil)
+             (when (and (acceptor-read-timeout *acceptor*)
+                        (or (not (eq (server-protocol *request*) :http/1.1))
+                            keep-alive-requested-p))
+               ;; persistent connection are implicitly assumed for
+               ;; HTTP/1.1 but we return a 'Keep-Alive' header if the
+               ;; client has explicitly asked for one
+               (unless (header-out :connection) ;; allowing for handler overriding
+                 (setf (header-out :connection) "Keep-Alive"))
+               (setf (header-out :keep-alive)
+                     (format nil "timeout=~D" (acceptor-read-timeout *acceptor*)))))
+            ((not (header-out-set-p :connection))
+             (setf (header-out :connection) "Close"))))
+    (unless (and (header-out-p :server)
+                 (null (header-out :server)))
+      (setf (header-out :server) (or (header-out :server)
+                                     (acceptor-server-name *acceptor*))))
+    (setf (header-out :date) (rfc-1123-date))
+    (when (and (stringp content)
+               (not content-modified-p)
+               (starts-with-one-of-p (or (content-type*) "")
+                                     *content-type-for-url-rewrite*))
+      ;; if the Content-Type header starts with one of the strings
+      ;; in *CONTENT-TYPES-FOR-URL-REWRITE* then maybe rewrite the
+      ;; content
+      (setq content (maybe-rewrite-urls-for-session content)))
+    (when (stringp content)
+      ;; if the content is a string, convert it to the proper external format
+      (setf content (string-to-octets content :external-format (reply-external-format*))
+            (content-type*) (maybe-add-charset-to-content-type-header (content-type*)
+                                                                      (reply-external-format*))))
+    (when content
+      ;; whenever we know what we're going to send out as content, set
+      ;; the Content-Length header properly; maybe the user specified
+      ;; a different content length, but that will wrong anyway
+      (setf (header-out :content-length) (length content)))
+    ;; send headers only once
+    (when *headers-sent*
+      (return-from start-output))
+    (setq *headers-sent* t)
+    (send-response *acceptor*
+                   *hunchentoot-stream*
+                   return-code*
+                   :headers (headers-out*)
+                   :cookies (cookies-out*)
+                   :content (unless head-request-p
+                              content))
+    ;; when processing a HEAD request, exit to return from PROCESS-REQUEST
+    (when head-request-p
+      (throw 'request-processed nil))
+    (when chunkedp
+      ;; turn chunking on after the headers have been sent
+      (unless (typep *hunchentoot-stream* 'chunked-stream)
+        (setq *hunchentoot-stream* (make-chunked-stream *hunchentoot-stream*)))
+      (setf (chunked-stream-output-chunking-p *hunchentoot-stream*) t))
+    *hunchentoot-stream*))
