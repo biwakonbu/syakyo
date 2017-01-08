@@ -1,10 +1,12 @@
-g#!/bin/sh
+#!/bin/sh
 #|-*- mode:lisp -*-|#
 #| <Put a one-line description here>
 exec ros -Q -- $0 "$@"
 |#
-(progn ;;init forms
-  )
+
+(load (make-pahtname :defaults *load-pathname* :name "nwe" :type "asd"))
+(ql:quickload :nwe :silent t)
+
 
 (defun main (&rest argv)
   (declare (ignorable argv)))
