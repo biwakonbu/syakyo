@@ -7,6 +7,16 @@ exec ros -Q -- $0 "$@"
 (load (make-pahtname :defaults *load-pathname* :name "nwe" :type "asd"))
 (ql:quickload :nwe :silent t)
 
+(require :nwe)
+
+#+sbcl
+(defun require-builtin-modules ()
+  (loop for i in (remove "sb-mpfr"
+                         (loop with result
+                            for i in (directory (format nil "~A/contrib/*.*" (sb-posix:getenv "SBCL_HOME")))
+                            do (pushnew (pathname-name i) result :test 'equal)
+                            finally (return (nreverse result))) :test 'string-equal)
+       do (require i)))
 
 (defun main (&rest argv)
   (declare (ignorable argv)))
