@@ -7,7 +7,7 @@
 (defpackage :nwe-asd
   (:use :cl :asdf))
 
-(in-package :lem-asd)
+(in-package :nwe-asd)
 
 (pushnew :nwe-use-inquisitor *features*)
 
