@@ -4,7 +4,7 @@
 exec ros -Q -- $0 "$@"
 |#
 
-(load (make-pahtname :defaults *load-pathname* :name "nwe" :type "asd"))
+(load (make-pathname :defaults *load-pathname* :name "nwe" :type "asd"))
 (ql:quickload :nwe :silent t)
 
 (require :nwe)
