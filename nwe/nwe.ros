@@ -7,8 +7,6 @@ exec ros -Q -- $0 "$@"
 (load (make-pathname :defaults *load-pathname* :name "nwe" :type "asd"))
 (ql:quickload :nwe :silent t)
 
-(require :nwe)
-
 #+sbcl
 (defun require-builtin-modules ()
   (loop for i in (remove "sb-mpfr"

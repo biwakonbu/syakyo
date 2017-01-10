@@ -33,7 +33,7 @@
                :swank
                ;; portabillity library for CL gray streams.
                ;; https://github.com/trivial-gray-streams/trivial-gray-streams
-               :trival-gray-streams
+               :trivial-gray-streams
                ;; portable perl conpatible regular expressions for common lisp.
                ;; http://weitz.de/cl-ppcre/
                :cl-ppcre
