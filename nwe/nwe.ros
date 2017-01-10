@@ -18,6 +18,13 @@ exec ros -Q -- $0 "$@"
                             finally (return (nreverse result))) :test 'string-equal)
        do (require i)))
 
+(defun usage ()
+  (format t "~{~A~%~}" '("usage: lem.ros [OPTION]... [FILE]..."
+                         #+sbcl "-b --build"
+                         #+sbcl "-db --debug-build"
+                         "-d --debug"
+                         "-h --help")))
+
 (defun main (&rest argv)
   (declare (ignorable argv)))
 ;;; vim: set ft=lisp lisp:
