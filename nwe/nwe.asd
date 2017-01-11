@@ -43,5 +43,6 @@
                :babel)
   :serial t
   :components ((:module "src"
-                :serial t)))
+                :serial t
+                :components ((:file "nwe")))))
 
