@@ -18,6 +18,10 @@
 (defmacro with-editor (() &body body)
   `(call-with-editor (lambda () ,@body)))
 
+(defun check-init ()
+  (when *running-p*
+    (error "~A is already running" *program-name*)))
+
 (defun nwe (&rest args)
   (check-init)
   (let ((report (with-editor ()
