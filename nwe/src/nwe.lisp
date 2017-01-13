@@ -2,6 +2,8 @@
 
 (export '(nwe))
 
+(defvar *running-p* nil)
+
 (let ((passed nil))
   (defun call-with-editor (function)
     (unwind-protect
