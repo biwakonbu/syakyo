@@ -16,3 +16,22 @@ exec ros -Q -m roswell -L sbcl-bin -- $0 "$@"
                           "-d --debug"
                           "-h --help")))
 
+(defun main (&rest argv)
+  (let ((debug-flag)
+        (filenames))
+    (loop for arg- on argv
+       for arg = (first arg-)
+       do (cond ((or (string= "--debug" arg)
+                     (string= "-d" arg))
+                 (setq debug-flag t))
+                ((or (string= "--help" arg)
+                     (string= "-h" arg))
+                 (usage)
+                 (return-from main))
+                (t
+                 (push arg filenames))))
+    (setq filenames (nreverse filenames))
+    (if debug-flag
+        (let ((nwe::nwe *program-name* "nwe dbg"))
+          (apply #'nwe:nwe filenames))
+        (apply #'nwe:nwe filenames))))
