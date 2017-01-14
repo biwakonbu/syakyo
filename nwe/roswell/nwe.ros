@@ -1,0 +1,18 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#| lem simple emacs clone.
+exec ros -Q -m roswell -L sbcl-bin -- $0 "$@"
+|#
+(progn
+  (unless (find-package :nwe)
+    (ql:quickload :nwe)))
+
+(defpackage :ros.script.lem.3672618460
+  (:use :cl))
+(in-package :ros.script.lem.3672618460)
+
+(defun usage ()
+  (format t "~{~A~%~}" `(,(format nil "usage: ~A [OPTION]... [FILE]..." (ros:opt "wargv0"))
+                          "-d --debug"
+                          "-h --help")))
+
