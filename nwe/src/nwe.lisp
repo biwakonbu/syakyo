@@ -54,7 +54,7 @@
                          (read-only-error ()
                            (message "Read Only"))
                          (editor-error (c)
-                           (message (editor-error-message)))))))))))))
+                           (message (editor-error-message))))))))))))))
 
 (defmacro with-editor (() &body body)
   `(call-with-editor (lambda () ,@body)))
@@ -66,7 +66,7 @@
 (defun nwe (&rest args)
   (check-init)
   (let ((report (with-editor ()
-                    (mapc 'find-file args)
+                  (mapc 'find-file args)
                   (nwe-mainloop))))
     (when report
       (format t "~&~a~%" report))))
