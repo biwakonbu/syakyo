@@ -4,18 +4,12 @@
 
 (defvar *running-p* nil)
 
-(let ((passed nil))
-  (defun call-with-editor (function)
-    (unwind-protect
-         (let ((*running-p* t))
-           (unless passed
-             (setq passed t)
-             (display-init)
-             (window-init)
-             (minibuf-init)
-             (run-hooks 'after-init-hook))
-           (funcall function))
-      (display-finalize))))
+(defvar *mainloop-timer*
+  (start-idle-timer "mainloop" 200 t
+                    (lambda ()
+                      (syntax-scan-current-view)
+                      (redraw-desplay)
+                      )))
 
 ;; main loop
 (defun nwe-mainlopp ()
@@ -55,6 +49,19 @@
                            (message "Read Only"))
                          (editor-error (c)
                            (message (editor-error-message))))))))))))))
+
+(let ((passed nil))
+  (defun call-with-editor (function)
+    (unwind-protect
+         (let ((*running-p* t))
+           (unless passed
+             (setq passed t)
+             (display-init)
+             (window-init)
+             (minibuf-init)
+             (run-hooks 'after-init-hook))
+           (funcall function))
+      (display-finalize))))
 
 (defmacro with-editor (() &body body)
   `(call-with-editor (lambda () ,@body)))
