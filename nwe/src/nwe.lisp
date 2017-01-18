@@ -12,6 +12,20 @@
       :stream stream
       :condition condition))))
 
+(pushnew #'(lambda (window)
+             (declare (ignore window))
+             (syntax-scan-current-view))
+         *window-scroll-functions*)
+
+(pushnew #'(lambda (window)
+             (declare (ignore window))
+             (syntax-scan-current-view))
+         *window-size-change-functions*)
+
+(pushnew #'(lambda (window)
+             (syntax-scan-window window))
+         *window-show-buffer-functions*)
+
 (defmacro with-error-handler (() &body body)
   `(handler-case-bind (#'(lambda (condition)
                            (handler-bind ((error #'bailout))
