@@ -4,6 +4,14 @@
 
 (defvar *running-p* nil)
 
+(defun bailout (condition)
+  (exit-editor
+   (with-output-to-string (stream)
+     (princ condition stream)
+     (uiop/image:print-backtrace
+      :stream stream
+      :condition condition))))
+
 (defmacro with-error-handler (() &body body)
   `(handler-case-bind (#'(lambda (condition)
                            (handler-bind ((error #'bailout))
