@@ -4,6 +4,15 @@
 
 (defvar *running-p* nil)
 
+(defun ask-revert-buffer ()
+  (if (minibuf-y-or-n-p (format nil
+                                "~A changed on disk; revert buffer?"
+                                (buffer-filename)))
+      (revert-buffer t)
+      (update-changed-disk-date (current-buffer)))
+  (redraw-display)
+  (message nil))
+
 (defvar *mainloop-timer*
   (start-idle-timer "mainloop" 200 t
                     (lambda ()
