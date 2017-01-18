@@ -4,6 +4,13 @@
 
 (defvar *running-p* nil)
 
+(defmacro with-error-handler (() &body body)
+  `(handler-case-bind (#'(lambda (condition)
+                           (handler-bind ((error #'bailout))
+                             (pop-up-backtrace condition)))
+                         ,@body)
+                      ((condition) (declare (ignore condition)))))
+
 (defun ask-revert-buffer ()
   (if (minibuf-y-or-n-p (format nil
                                 "~A changed on disk; revert buffer?"
