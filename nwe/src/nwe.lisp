@@ -4,6 +4,18 @@
 
 (defvar *running-p* nil)
 
+(defun pop-up-backtrace (condition)
+  (let ((buffer (get-buffer-create "*EDITOR ERROR*")))
+    (display-buffer buffer)
+    (switch-to-buffer buffer)
+    (buffer-erase)
+    (with-open-stream (stream (make-buffer-output-stream buffer (current-point)))
+      (princ condition stream)
+      (fresh-line stream)
+      (uiop/image:print-backtrace
+       :stream stream
+       :count 100))))
+
 (defun bailout (condition)
   (exit-editor
    (with-output-to-string (stream)
