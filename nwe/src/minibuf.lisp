@@ -2,6 +2,8 @@
 
 (defparameter *minibuffer-window-height* 1)
 
+(defvar *minibuf-window*)
+
 (defun minibuffer-window-height () *minibuffer-window-height*)
 
 (defun minibuf-init ()
