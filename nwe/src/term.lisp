@@ -3,7 +3,7 @@
   (:use :cl)
   (:export :term-init
            :term-set-tty))
-(in-package :lem.term)
+(in-package :nwe.term)
 
 (defun init-colors ()
   )
