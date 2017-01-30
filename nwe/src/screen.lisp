@@ -38,3 +38,10 @@
                 :width width
                 :lines (make-array (max 0 height) :initial-element nil)
                 :old-lines (make-array (max 0 height) :initial-element nil)))
+
+(defun redraw-display ()
+  (dolist (window (window-list))
+    (unless (eq window (current-window))
+      (redraw-display-window window nil)))
+  (redraw-display-window (current-window) nil)
+  (charms/ll:doupdate))
