@@ -43,3 +43,9 @@
       (if recenter
           (window-recenter window)
           (window-scrll window offset)))))
+
+(defun window-prompt-display (window)
+  (when (window-parameter window 'change-buffer)
+    (setf (window-parameter window 'change-buffer) nil)
+    (dolist (fun *window-show-buffer-functions*)
+      (funcall fun window))))
