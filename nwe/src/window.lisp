@@ -36,3 +36,10 @@
                      (window-max-height)
                      t))
   (setf (window-tree) (current-window)))
+
+(defun window-see (window &optional (recenter *scroll-recenter-p*))
+  (let ((offset (window-offset-view window)))
+    (unless (zerop offset)
+      (if recenter
+          (window-recenter window)
+          (window-scrll window offset)))))
