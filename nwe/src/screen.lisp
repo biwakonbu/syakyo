@@ -105,6 +105,14 @@
                 (return)))))
     (screen-move-cursor screen curx cury)))
 
+(defun screen-redraw-separator (window)
+  (charms/ll:attron charms/ll:a_reverse)
+  (when (< 0 (window-x window))
+    (charms/ll:move (window-y window) (1- (window-x window)))
+    (charms/ll:vline (char-code #\|) (window-height window)))
+  (charms/ll:attroff charms/ll:a_reverse)
+  (charms/ll:wnoutrefresh charms/ll:*stdscr*))
+
 (defun redraw-display-window (window doupdata-p)
   (window-see window)
   (nwe:window-prompt-display window)
