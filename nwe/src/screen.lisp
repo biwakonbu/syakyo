@@ -39,6 +39,9 @@
                 :lines (make-array (max 0 height) :initial-element nil)
                 :old-lines (make-array (max 0 height) :initial-element nil)))
 
+(defun screen-modify (screen)
+  (setf (screen-modified-p screen) t))
+
 (defun screen-display-lines (screen redraw-flag buffer start-charpos start-linum pos-x pos-y)
   ;; (when redraw-flag
   ;;   (charms/ll:werase (screen-%scrwin screen)))
