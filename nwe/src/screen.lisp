@@ -113,6 +113,16 @@
   (charms/ll:attroff charms/ll:a_reverse)
   (charms/ll:wnoutrefresh charms/ll:*stdscr*))
 
+(defun screen-redraw-modeline (window)
+  (scrwin-print-string (screen-%modeline-scrwin (window-screen window))
+                       0
+                       0
+                       (modeline-string window)
+                       (if (eq window (current-window))
+                           *modeline-attribute*
+                           *modeline-inactive-attribute*))
+  (charms/ll:wnoutrefresh (screen-%modeline-scrwin (window-screen window))))
+
 (defun redraw-display-window (window doupdata-p)
   (window-see window)
   (nwe:window-prompt-display window)
