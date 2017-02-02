@@ -42,6 +42,9 @@
 (defun screen-modify (screen)
   (setf (screen-modified-p screen) t))
 
+(defun screen-move-curser (screen x y)
+  (charms/ll:wmove (screen-%scrwin screen) y x))
+
 (defun screen-display-lines (screen redraw-flag buffer start-charpos start-linum pos-x pos-y)
   ;; (when redraw-flag
   ;;   (charms/ll:werase (screen-%scrwin screen)))
@@ -68,7 +71,7 @@
                  (buffer-truncate-lines buffer)
                  (not redraw-flag)                     ; 再描画フラグが偽で
                  (not (null str/attributes))           ; その行に表示する行文字列があり
-                 #1=(aref (screen-olg-lines screen) i) ; 以前にその行に文字列を表示しており
+                 #1=(aref (screen-old-lines screen) i) ; 以前にその行に文字列を表示しており
                  (equal str/attributes #1#)            ; 表示しようとしている文字列が以前に表示する行と内容が同じで
                  (/= (- pos-y start-linum) 1)
                  )
