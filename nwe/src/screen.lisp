@@ -153,3 +153,37 @@
       (redraw-display-window window nil)))
   (redraw-display-window (current-window) nil)
   (charms/ll:doupdate))
+
+(defun update-display-size ()
+  (let ((delete-display-size))
+    (dolist (window (window-list))
+      (when (<= (display-height)
+                (+ (window-y window) 2))
+        (push window delete-windows))
+      (when (<= (display-width)
+                (+ (window-x window) 1))
+        (push window delete-windows)))
+    (mapc #'delete-window delete-windows))
+  (let ((window-list (window-list)))
+    (dolist (window (nwe::collect-right-windows window-list))
+      (nwe:window-resize window
+                         (- (display-width)
+                            *old-display-width*)
+                         0))
+    (dolist (window (nwe::collect-bottom-windows window-list))
+      (nwe::window-resize window
+                          0
+                          (- (display-height)
+                             *old-display-height*)))
+    (setq *old-display-width* (display-width))
+    (setq *old-display-height* (display-height))
+    (charms/ll:mvwin *echo-area-scrwin*
+                     (- (display-height)
+                        (minibuffer-window-height))
+                     0)
+    (charms/ll:wresize *echo-area-scrwin*
+                       (minibuffer-window-height)
+                       (display-width))
+    (nwe:minibuf-update-size)
+    (print-echoarea nil nil)
+    (redraw-display)))
