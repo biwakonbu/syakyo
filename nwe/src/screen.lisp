@@ -187,3 +187,21 @@
     (nwe:minibuf-update-size)
     (print-echoarea nil nil)
     (redraw-display)))
+
+(defun get-char-1 ()
+  (loop :for code := (charms/ll:getch) :do
+     (cond ((= code 410)
+            (update-display-size))
+           ((= code -1)
+            (return nil))
+           (t
+            (return
+              (let ((nbytes (utf8-bytes code)))
+                (if (= nbytes 1)
+                    (code-char code)
+                    (aref (babel-actets-to-string
+                           (coerce (cons code
+                                         (loop :repeat (1- nbytes)
+                                            :collect (charms/ll:getch)))
+                                   '(vector (unsigned-byte 8))))
+                          0))))))))
