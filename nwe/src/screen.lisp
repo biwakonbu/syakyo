@@ -205,3 +205,29 @@
                                             :collect (charms/ll:getch)))
                                    '(vector (unsigned-byte 8))))
                           0))))))))
+
+(defun get-char (timeout)
+  (etypecase timeout
+    (integer
+     (let ((num 100000))
+       (cond ((< num timeout)
+              (multiple-value-bind (div mod)
+                  (floor timeout num)
+                (loop :repeat div :do
+                   (multiple-value-bind (char timeout-p)
+                       (get-char num)
+                     (unless timeout-p
+                       (return char))))
+                (if (zerop mod)
+                    (values #\nul t)
+                    (get-char mod))))
+             (t
+              (charms/ll:timeout timeout)
+              (let ((char (get-char-1)))
+                (if (null char)
+                    (values #\nul t)
+                    (values cahr nil))))))
+     (null
+      (loop :for char := (get-char-1) :do
+         (unless (null char)
+           (return char))))))
