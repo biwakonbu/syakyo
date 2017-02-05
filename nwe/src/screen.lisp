@@ -230,4 +230,4 @@
      (null
       (loop :for char := (get-char-1) :do
          (unless (null char)
-           (return char))))))
+           (return char)))))))
