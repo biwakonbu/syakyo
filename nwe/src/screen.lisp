@@ -231,3 +231,7 @@
       (loop :for char := (get-char-1) :do
          (unless (null char)
            (return char)))))))
+
+(defun call-winth-allow-interrupt (flag fn)
+  (with-raw (not flag)
+    (funcall fn)))
