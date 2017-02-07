@@ -50,6 +50,9 @@
   (when (screen-%modeline-scrwin screen)
     (charms/ll:clearok (screen-%modeline-scrwin screen) 1)))
 
+(defun screen-erase (screen)
+  (charms/ll:werase (screen-%scrwin screen)))
+
 (defun screen-modify (screen)
   (setf (screen-modified-p screen) t))
 
