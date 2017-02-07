@@ -39,6 +39,11 @@
                 :lines (make-array (max 0 height) :initial-element nil)
                 :old-lines (make-array (max 0 height) :initial-element nil)))
 
+(defun screen-delete (screen)
+  (charms/ll:delwin (screen-%scrwin screen))
+  (when (screen-%modeline-scrwin screen)
+    (charms/ll:delwin (screen-%modeline-scrwin screen))))
+
 (defun screen-modify (screen)
   (setf (screen-modified-p screen) t))
 
