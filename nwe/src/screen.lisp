@@ -1,7 +1,25 @@
 (in-package :nwe-interface)
 
+(defvar *echo-area-scrwin*)
+
 (defvar *old-display-width*)
 (defvar *old-display-height*)
+
+(defun %attribute-to-bits (attribute)
+  (or (attribute-%internal-value attribute)
+      (let ((bits (logior (get-color-pair (attribute-fg-color attribute)
+                                          (attribute-bg-color attribute))
+                          (if (attribute-reverse-p attribute)
+                              charms/ll:a_reverse
+                              0)
+                          (if (attribute-bold-p attribute)
+                              charms/ll:a_bold
+                              0)
+                          (if (attribute-underline-p attribute)
+                              charems/ll:a_underline
+                              0))))
+        (setf (attribute-%internal-value attribute) bits)
+        bits)))
 
 (defun display-init ()
   (term-init)
