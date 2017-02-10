@@ -77,6 +77,27 @@
 (defun screen-modify (screen)
   (setf (screen-modified-p screen) t))
 
+(defun screen-set-size (screen width height)
+  (screen-modify screen)
+  (when (screen-%modeline-scrwin screen)
+    (decf height))
+  (charms/ll:wresize (screen-%scrwin screen)
+                     height
+                     width)
+  (when (screen-%modeline-scrwin screen)
+    (charms/ll:mvwin (screen-%modeline-scrwin screen)
+                     (+ (screen-y screen) height)
+                     (screen-x screen))
+    (charms/ll:wresize (screen-%modeline-scrwin screen)
+                       (minibuffer-window-height)
+                       width))
+  (setf (screen-lines screen)
+        (make-array height :initial-element nil))
+  (setf (screen-old-lines screen)
+        (make-array height :initial-element nil))
+  (setf (screen-width screen)
+        width))
+
 (defun screen-move-curser (screen x y)
   (charms/ll:wmove (screen-%scrwin screen) y x))
 
