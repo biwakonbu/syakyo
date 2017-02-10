@@ -71,6 +71,9 @@
 (defun screen-erase (screen)
   (charms/ll:werase (screen-%scrwin screen)))
 
+(defun screen-height (screen)
+  (length (screen-lines screen)))
+
 (defun screen-modify (screen)
   (setf (screen-modified-p screen) t))
 
