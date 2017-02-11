@@ -108,6 +108,15 @@
                      (+ y (screen-height screen))
                      x)))
 
+(defun srwin-print-string (scrwin x y string attr)
+  (cond ((null attr)
+         (setf attr 0))
+        ((attribute-p attr)
+         (setf attr (%attribute-to-bits attr))))
+  (charms/ll:wattron scrwin attr)
+  (charms/ll:mvaddstr scrwin y x string)
+  (charms/ll:wattroff scrwin attr))
+
 (defun screen-move-curser (screen x y)
   (charms/ll:wmove (screen-%scrwin screen) y x))
 
