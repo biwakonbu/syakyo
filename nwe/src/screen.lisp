@@ -98,6 +98,16 @@
   (setf (screen-width screen)
         width))
 
+(defun screen-set-pos (screen x y)
+  (screen-modify screen)
+  (setf (screen-x screen) x)
+  (setf (screen-y screen) y)
+  (charms/ll:mvwin (screen-%scrwin screen) y x)
+  (when (screen-%modeline-scrwin screen)
+    (charms/ll:mvwin (screen-%modeline-scrwin screen)
+                     (+ y (screen-height screen))
+                     x)))
+
 (defun screen-move-curser (screen x y)
   (charms/ll:wmove (screen-%scrwin screen) y x))
 
