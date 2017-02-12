@@ -117,6 +117,9 @@
   (charms/ll:mvaddstr scrwin y x string)
   (charms/ll:wattroff scrwin attr))
 
+(defun screen-print-string-attr (acreen x y string attr)
+  (scrwin-print-string (screen-%scrwin screen) x y string attr))
+
 (defun screen-move-curser (screen x y)
   (charms/ll:wmove (screen-%scrwin screen) y x))
 
