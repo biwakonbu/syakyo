@@ -126,6 +126,9 @@
 (defun aref-screen-line-string (screen i)
   (car (aref (screen-lines screen) i)))
 
+(defun aref-screen-line-attributes (screen i)
+  (cdr (aref (screen-lines screen) i)))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
