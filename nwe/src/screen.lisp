@@ -123,6 +123,9 @@
 (defun screen-move-curser (screen x y)
   (charms/ll:wmove (screen-%scrwin screen) y x))
 
+(defun aref-screen-line-string (screen i)
+  (car (aref (screen-lines screen) i)))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
