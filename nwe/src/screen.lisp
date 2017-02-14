@@ -129,6 +129,27 @@
 (defun aref-screen-line-attributes (screen i)
   (cdr (aref (screen-lines screen) i)))
 
+(defun set-attr-display-line (screen
+                              attr
+                              start-linum
+                              linum
+                              start-charpos
+                              end-charpos)
+  (let ((i (- linm start-linum)))
+    (when (<= 0 i (1- (screen-height screen)))
+      (unless end-charpos
+        (setq end-charpos (length (aref-screen-line-string screen i))))
+      (when (aref (screen-lines screen) i)
+        (destructuring-bind (string . attributes) (aref (screen-lines screen) i)
+          (let ((start start-charpos)
+                (end (min end-charpos (length string))))
+            (when (< start end)
+              (setf (cdr (aref (screen-lines screen) i))
+                    (nwe::put-elements attributes
+                                       start-charpos
+                                       (min end-charpos (length string))
+                                       attr)))))))))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
