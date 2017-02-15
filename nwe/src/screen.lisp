@@ -150,6 +150,27 @@
                                        (min end-charpos (length string))
                                        attr)))))))))
 
+(defun set-attr-display-lines (screen
+                               attr
+                               top-linum
+                               start-linum
+                               start-charpos
+                               end-linum
+                               end-charpos)
+  (set-attr-display-line screen
+                         attr
+                         top-linum
+                         start-linum
+                         start-charpos
+                         nil)
+  (loop :for linum :from (1+ start-linum) :below end-linum :do
+     (set-attr-display-line screen
+                            attr
+                            top-linum
+                            linum
+                            0
+                            end-charpos))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
