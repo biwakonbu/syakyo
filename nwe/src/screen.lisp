@@ -295,6 +295,40 @@
                        start-linum
                        end-linum)))
 
+(defun disp-print-line (screen y str/attributes do-clrtoeol
+                        &key (start-x 0) (string-start 0) string-end)
+  (declare (optimize (speed 0) (safty 3) (debug 3)))
+  (destructuring-bind (str . attributes)
+      str/attributes
+    (when (null string-end)
+      (setf string-end (length str)))
+    (unless (and (= 0 string-start)
+                 (= (length str) string-end))
+      (setf str (subseq str
+                        string-start
+                        (if (null string-edn)
+                            nil
+                            (min (length str) string-end))))
+      (setf attributes (nwe::subseq-elements attributes string-start string-end)))f
+      (let ((prev-end 0)
+            (x start-x))
+        (loop :for (start end attr) :in attributes
+           :do (setf end (min (length str) end))
+           :do (progn
+                 (screen-print-string-attr screen x y (subseq str prev-end start) nil)
+                 (incf x (string-width str prev-end start)))
+           :do (progn
+                 (screen-print-string-attr screen x y (subseq str start end) attr)
+                 (incf x (string-width str start end)))
+           :do (setf prev-end end))
+        (screen-print-string-attr screen x y
+                                  (if (= prev-end 0)
+                                      str
+                                      (subseq str prev-end))
+                                  nil))
+      (when do-clrtoeol
+        (charms/ll:wclrtoeol (screen-%scrwin screen)))))
+
 (defun screen-redraw-separator (window)
   (charms/ll:attron charms/ll:a_reverse)
   (when (< 0 (window-x window))
