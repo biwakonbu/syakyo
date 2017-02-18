@@ -173,6 +173,12 @@
                             linum
                             0
                             end-charpos))
+  (set-attr-display-line screen
+                         attr
+                         top-linum
+                         linum
+                         0
+                         nil))
 
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
