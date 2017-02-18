@@ -31,6 +31,9 @@
                           (- (display-height) (minibuffer-window-height))
                           0)))
 
+(defun display-finalize ()
+  (term-finalize))
+
 (defun display-width () charms/ll:*cols*)
 (defun display-height () charms/ll:*lines*)
 
