@@ -180,6 +180,49 @@
                          0
                          nil))
 
+(defun disp-set-overlays (screen overlays start-linum end-linum)
+  (loop
+     :for overlay :in overlays
+     :for start := (overlay-start overlay)
+     :for end := (overlay-end overlay)
+     :do (cond ((and (= (point-linum start) (point-linum end))
+                     (<= start-linum (point-linum start) (1- end-linum)))
+                (set-attr-display-line screen
+                                       (overlay-attribute overlay)
+                                       start-linum
+                                       (point-linum start)
+                                       (point-charpos start)
+                                       (point-charpos end)))
+               ((and (<= start-linum (point-linum start))
+                     (< (point-linum end) end-linum))
+                (set-attr-display-lines screen
+                                        (overlay-attribute overlay)
+                                        start-linum
+                                        (point-linum start)
+                                        (point-charpos start)
+                                        (point-linum end)
+                                        (point-charpos end)))
+               ((<= (point-linum start)
+                    start-linum
+                    (point-linum end)
+                    end-linum)
+                (set-attr-display-lines screen
+                                        (overlay-attribute overlay)
+                                        start-linum
+                                        start-linum
+                                        0
+                                        (point-linum end)
+                                        (point-charpos end)))
+               ((<= start-linum
+                    (point-linum start))
+                (set-attr-display-lines screen
+                                        (overlay-attribute oberlay)
+                                        start-linum
+                                        (point-linum start)
+                                        (point-charpos start)
+                                        end-linum
+                                        nil)))))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
