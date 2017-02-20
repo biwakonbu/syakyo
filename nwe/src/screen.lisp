@@ -226,6 +226,61 @@
                                         end-linum
                                         nil)))))
 
+(defun disp-reset-lines (screen buffer start-linum)
+  (nwe::buffer-update-mark-overlay buffer)
+  (let ((end-linum (+ start-linum (screen-height screen)))
+        (disp-index 0))
+    (loop
+       :for linum :from start-linum :to (buffer-nlines buffer)
+       :while (< disp-index (screen-height screen)) :do
+       (setf (aref (screen-lines screen) disp-index)
+             (multiple-value-bind (string attributes)
+                 (buffer-line-string-with-attributes buffer linum)
+               (cons string attributes)))
+       (incf disp-index))
+    (loop
+       :for i :from disp-index :below (screen-height screen)
+       :do (setf (aref (screen-lines screen) i) nil))
+    (disp-set-overlays screen
+                       (buffer-overlays buffer)
+                       start-linum
+                       end-linum)))
+
+
+(defun disp-print-line (screen y str/attributes do-clrtoeol
+                        &key (start-x 0) (string-start 0) string-end)
+  (declare (optimize (speed 0) (safty 3) (debug 3)))
+  (destructuring-bind (str . attributes)
+      str/attributes
+    (when (null string-end)
+      (setf string-end (length str)))
+    (unless (and (= 0 string-start)
+                 (= (length str) string-end))
+      (setf str (subseq str
+                        string-start
+                        (if (null string-edn)
+                            nil
+                            (min (length str) string-end))))
+      (setf attributes (nwe::subseq-elements attributes string-start string-end)))f
+      (let ((prev-end 0)
+            (x start-x))
+        (loop :for (start end attr) :in attributes
+           :do (setf end (min (length str) end))
+           :do (progn
+                 (screen-print-string-attr screen x y (subseq str prev-end start) nil)
+                 (incf x (string-width str prev-end start)))
+           :do (progn
+                 (screen-print-string-attr screen x y (subseq str start end) attr)
+                 (incf x (string-width str start end)))
+           :do (setf prev-end end))
+        (screen-print-string-attr screen x y
+                                  (if (= prev-end 0)
+                                      str
+                                      (subseq str prev-end))
+                                  nil))
+      (when do-clrtoeol
+        (charms/ll:wclrtoeol (screen-%scrwin screen)))))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
@@ -349,40 +404,6 @@
                        (buffer-overlays buffer)
                        start-linum
                        end-linum)))
-
-(defun disp-print-line (screen y str/attributes do-clrtoeol
-                        &key (start-x 0) (string-start 0) string-end)
-  (declare (optimize (speed 0) (safty 3) (debug 3)))
-  (destructuring-bind (str . attributes)
-      str/attributes
-    (when (null string-end)
-      (setf string-end (length str)))
-    (unless (and (= 0 string-start)
-                 (= (length str) string-end))
-      (setf str (subseq str
-                        string-start
-                        (if (null string-edn)
-                            nil
-                            (min (length str) string-end))))
-      (setf attributes (nwe::subseq-elements attributes string-start string-end)))f
-      (let ((prev-end 0)
-            (x start-x))
-        (loop :for (start end attr) :in attributes
-           :do (setf end (min (length str) end))
-           :do (progn
-                 (screen-print-string-attr screen x y (subseq str prev-end start) nil)
-                 (incf x (string-width str prev-end start)))
-           :do (progn
-                 (screen-print-string-attr screen x y (subseq str start end) attr)
-                 (incf x (string-width str start end)))
-           :do (setf prev-end end))
-        (screen-print-string-attr screen x y
-                                  (if (= prev-end 0)
-                                      str
-                                      (subseq str prev-end))
-                                  nil))
-      (when do-clrtoeol
-        (charms/ll:wclrtoeol (screen-%scrwin screen)))))
 
 (defun screen-redraw-separator (window)
   (charms/ll:attron charms/ll:a_reverse)
