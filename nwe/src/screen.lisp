@@ -111,7 +111,7 @@
                      (+ y (screen-height screen))
                      x)))
 
-(defun srwin-print-string (scrwin x y string attr)
+(defun scrwin-print-string (scrwin x y string attr)
   (cond ((null attr)
          (setf attr 0))
         ((attribute-p attr)
@@ -119,6 +119,9 @@
   (charms/ll:wattron scrwin attr)
   (charms/ll:mvaddstr scrwin y x string)
   (charms/ll:wattroff scrwin attr))
+
+(defun screen-print-string (screen x y string)
+  (scrwin-print-strign (screen-%scrwin screen) x y string nil))
 
 (defun screen-print-string-attr (acreen x y string attr)
   (scrwin-print-string (screen-%scrwin screen) x y string attr))
