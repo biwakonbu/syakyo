@@ -281,6 +281,34 @@
       (when do-clrtoeol
         (charms/ll:wclrtoeol (screen-%scrwin screen)))))
 
+(defun disp-line-wrapping (screen start-charpos curx cury pos-x y str/attributes)
+  (let ((start (if (and (< 0 start-charpos) (= y 0))
+                   start-charpos
+                   0)))
+    (when (= y cury)
+      (setf curx (string-width (car str/attributes) start pos-x)))
+    (loop :for i := (wide-index (car str/attributes)
+                                (1- (screen-width screen))
+                                :start start)
+       :while (< y (screen-height screen))
+       : (cond
+           ((null i)
+            (disp-print-line screen y str/attributes t :string-start start)
+            (return))
+           (t
+            (cond ((< y cury)
+                   (incf cury))
+                  ((= y cury)
+                   (let ((len (string-width (car str/attributes) start i)))
+                     (when (<= len curx)
+                       (decf curx len)
+                       (incf cury)))))
+            (disp-print-line screen y str/attributes t :string-start start :string-end i)
+            (disp-print-line screen y (cos "!" nil) t :start-x (1- (screen-width screen)))
+            (incf y)
+            (setf start i))))
+    (values curx cury y)))
+
 (defun disp-line (screen start-charpos curx cury pos-x y str/attributes)
   (declare (ignore start-charpos))
   (when (= cury y)
