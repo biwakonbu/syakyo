@@ -413,26 +413,6 @@
                 (return)))))
     (screen-move-cursor screen curx cury)))
 
-(defun disp-reset-lines (screen buffer start-linum)
-  (nwe::buffer-update-mark-overlay buffer)
-  (let ((end-linum (+start-linum (screen-height screen)))
-        (disp-index 0))
-    (loop
-       :for linum :from start-linum :to (buffer-nlines buffer)
-       :while (< disp-index (screen-height screen)) :do
-       (setf (aref (screen-lines screen) disp-index)
-             (multiple-value-bind (string attributes)
-                 (buffer-line-string-with-attributes buffer linum)
-               (cons string attributes)))
-       (incf disp-index))
-    (loop
-       :for i :from disp-index :below (screen-height screen)
-       :do (setf (aref (screen-lines screen) i) nil))
-    (disp-set-overlays screen
-                       (buffer-overlays buffer)
-                       start-linum
-                       end-linum)))
-
 (defun screen-redraw-separator (window)
   (charms/ll:attron charms/ll:a_reverse)
   (when (< 0 (window-x window))
