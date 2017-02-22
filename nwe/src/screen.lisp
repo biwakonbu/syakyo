@@ -490,6 +490,14 @@
     (print-echoarea nil nil)
     (redraw-display)))
 
+(defun print-echoarea (string doupdate-p)
+  (charms/ll:werase *echo-area-scrwin*)
+  (unless (null string)
+    (charms/ll:mvwaddstr *echo-area-scrwin* 0 0 string))
+  (if doupdate-p
+      (charms/ll:wrefresh *echo-area-scrwin*)
+      (charms/ll:wnoutrefresh *echo-area-scrwin*)))
+
 (defun get-char-1 ()
   (loop :for code := (charms/ll:getch) :do
      (cond ((= code 410)
