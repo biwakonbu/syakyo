@@ -516,12 +516,6 @@
                                    '(vector (unsigned-byte 8))))
                           0))))))))
 
-(defun print-echoarea (string doupdate-p)
-  (charms/ll:mvwaddstr *echo-area-scrwin* 0 0 string)
-  (if doupdate-p
-      (charms/ll:wrefresh *echo-area-scrwin*)
-      (charms/ll:wnoutrefresh *echo-area-scrwin*)))
-
 (defun get-char (timeout)
   (etypecase timeout
     (integer
