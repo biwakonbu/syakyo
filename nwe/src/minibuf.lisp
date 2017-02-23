@@ -3,6 +3,9 @@
 (defparameter *minibuffer-window-height* 1)
 
 (defvar *minibuf-window*)
+(defvar *minibuffer-calls-window*)
+(defvar *minibuffer-start-point*)
+(defvar minibuffer-prompt-attribute* (make-attribute "blue" nil :bold-p t))
 
 (defun minibuffer-window-height () *minibuffer-window-height*)
 
