@@ -86,3 +86,12 @@
     (if (char= c C-g)
         (error 'editor-abort)
         c)))
+
+(defun minibuf-y-or-n-p (prompt)
+  (do () (nil)
+    (let ((c (minibuf-read-char (format nil "~a [y/n]? " prompt))))
+      (cond
+        ((char= #\y c)
+         (return t))
+        ((char= #\n c)
+         (return nil))))))
