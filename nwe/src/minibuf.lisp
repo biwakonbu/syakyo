@@ -32,6 +32,12 @@
 (defun minibuffer () (window-buffer (minibuffer-window)))
 (defun minibuffer-calls-window () *minibuffer-calls-window*)
 
+(define-major-mode minibuffer-mode ()
+  (:name "minibuffer"
+   :keymap *minibuf-keymap*
+   :syntax-table (make-syntax-table
+                  :symbol-chars '(#\_ #\-))))
+
 (defun minibuf-init ()
   (let* ((buffer (make-buffer " *minibuffer*"))
          (window (make-window buffer
