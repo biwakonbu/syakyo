@@ -48,3 +48,7 @@
                               (minibuffer-window-height)
                               nil)))
     (setq *minibuf-window* window)))
+
+(defun minibuf-update-size ()
+  (window-set-pos (minibuffer-window) 0 (1- (display-height)))
+  (window-set-size (minibuffer-window) (display-width) 1))
