@@ -62,3 +62,16 @@
                                    (point-max buffer)))
           (fresh-line stream)
           (princ msg stream))))))
+
+(defun message (strign &rest args)
+  (log-message string args)
+  (when (interactive-p)
+    (let ((flag (minibuffer-window-active-p)))
+      (print-echoarea (if (null string)
+                          nil
+                          (apply #'format nil string args))
+                      flag)
+      (when flag
+        (sit-for 1 nil)
+        (print-echoarea nil nil))))
+  t)
