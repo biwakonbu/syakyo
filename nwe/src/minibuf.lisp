@@ -95,3 +95,10 @@
          (return t))
         ((char= #\n c)
          (return nil))))))
+
+(define-key *minibuf-keymap* (kbd "C-j") 'minibuf-read-line-confirm)
+(define-key *minibuf-keymap* (kbd "C-m") 'minibuf-read-line-confirm)
+(define-key *minibuf-keymap* (kbd "C-i") 'minibuf-read-line-confirm)
+(define-key *minibuf-keymap* (kbd "M-p") 'minibuf-read-line-prev-history)
+(define-key *minibuf-keymap* (kbd "M-n") 'minibuf-read-line-next-history)
+(define-key *minibuf-keymap* (kbd "C-g") 'minibuf-read-line-break)
