@@ -120,3 +120,8 @@
   (if (/= 0 *minibuf-read-line-depth*)
       (minibuffer-window)
       nil))
+
+(defun get-minibuffer-string ()
+  (region-string *minibuffer-start-point*
+                 (point-max (minibuffer))
+                 (minibuffer)))
