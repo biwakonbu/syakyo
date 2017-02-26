@@ -102,3 +102,16 @@
 (define-key *minibuf-keymap* (kbd "M-p") 'minibuf-read-line-prev-history)
 (define-key *minibuf-keymap* (kbd "M-n") 'minibuf-read-line-next-history)
 (define-key *minibuf-keymap* (kbd "C-g") 'minibuf-read-line-break)
+
+(defvar *minibuf-read-line-prompt*)
+(defvar *minibuf-read-line-comp-f*)
+(defvar *minibuf-read-line-existing-p*)
+
+(defvar *minibuf-read-line-history-table* (make-hash-table))
+(defvar *minibuf-read-line-history*)
+
+(defvar *minibuf-read-line-depth* 0)
+
+(defun check-switch-minibuffer-window ()
+  (when (minibuffer-window-active-p)
+    (editor-error "Cannot switch buffer in minibuffer window")))
