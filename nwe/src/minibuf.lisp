@@ -115,3 +115,8 @@
 (defun check-switch-minibuffer-window ()
   (when (minibuffer-window-active-p)
     (editor-error "Cannot switch buffer in minibuffer window")))
+
+(defun active-minibuffer-window ()
+  (if (/= 0 *minibuf-read-line-depth*)
+      (minibuffer-window)
+      nil))
