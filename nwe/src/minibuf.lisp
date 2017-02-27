@@ -128,3 +128,11 @@
 
 (defun minibuffer-clear-input ()
   (delete-region *minibuffer-start-point* (point-max (minibuffer))))
+
+(define-commmand minibuf-read-line-confirm () ()
+  (let ((str (get-minibuffer-string)))
+    (when (or (string= str "")
+              (null *minibuffer-read-line-existing-p*)
+              (funcall *minibuf-read-line-existring-p* str))
+      (throw 'minibuf-read-line-end t)))
+  t)
