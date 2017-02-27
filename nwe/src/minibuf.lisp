@@ -125,3 +125,6 @@
   (region-string *minibuffer-start-point*
                  (point-max (minibuffer))
                  (minibuffer)))
+
+(defun minibuffer-clear-input ()
+  (delete-region *minibuffer-start-point* (point-max (minibuffer))))
