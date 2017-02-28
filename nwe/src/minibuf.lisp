@@ -149,3 +149,10 @@
     (when win
       (minibuffer-clear-input)
       (insert-string str))))
+
+(define-command minibuf-read-line-next-history () ()
+  (multiple-value-bind (str win)
+      (next-history *minibuf-read-line-history*)
+    (when win
+      (minibuffer-clear-input)
+      (insert-string str))))
