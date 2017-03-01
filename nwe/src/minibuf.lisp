@@ -136,3 +136,9 @@
               (funcall *minibuf-read-line-existring-p* str))
       (throw 'minibuf-read-line-end t)))
   t)
+
+(define-command minibuf-read-line-completion () ()
+  (when *minibuf-read-line-comp-f*
+    (start-completion *minibuf-read-line-existing-p*
+                      (get-minibuffer-string)))
+  t)
