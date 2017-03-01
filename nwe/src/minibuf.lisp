@@ -139,6 +139,21 @@
 
 (define-command minibuf-read-line-completion () ()
   (when *minibuf-read-line-comp-f*
-    (start-completion *minibuf-read-line-existing-p*
+    (start-completion *minibuf-read-line-comp-f*
                       (get-minibuffer-string)))
   t)
+
+(define-command minibuf-read-line-prev-history () ()
+  (multiple-value-bind (str win)
+      (prev-history *minibuf-read-line-history*)
+    (when win
+      (minibuffer-clear-input)
+      (insert-string str))))
+
+(define-command minibuf-read-line-next-history () ()
+  (multiple-value-bind (str win)
+      (next-history *minibuf-read-line-history*)
+    (when win
+      (minibuffer-clear-input)
+      (insert-string str))))
+
