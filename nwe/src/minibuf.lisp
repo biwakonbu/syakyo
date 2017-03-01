@@ -157,3 +157,5 @@
       (minibuffer-clear-input)
       (insert-string str))))
 
+(define-command minibuf-read-line-break () ()
+  (window-current-linum (minibuffer-window)))
