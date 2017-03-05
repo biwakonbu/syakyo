@@ -30,6 +30,7 @@
 (defun minibuffer-window-active-p () (eq (current-window) (minibuffer-window)))
 (defun minibuffer-window-height () *minibuffer-window-height*)
 (defun minibuffer () (window-buffer (minibuffer-window)))
+(defun minibufferp (buffer) (eq buffer (minibuffer)))
 (defun minibuffer-calls-window () *minibuffer-calls-window*)
 
 (define-major-mode minibuffer-mode ()
@@ -158,4 +159,7 @@
       (insert-string str))))
 
 (define-command minibuf-read-line-break () ()
+  (error 'editor-abort :depth (1- *minibuf-read-line-depth*)))
+
+(defun minibuf-point-linum ()
   (window-current-linum (minibuffer-window)))
