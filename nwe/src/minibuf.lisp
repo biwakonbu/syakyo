@@ -163,3 +163,6 @@
 
 (defun minibuf-point-linum ()
   (window-current-linum (minibuffer-window)))
+
+(defun minibuf-point-charpos ()
+  (window-current-charpos (minibuffer-window)))
