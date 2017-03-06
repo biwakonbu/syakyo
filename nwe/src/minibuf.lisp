@@ -166,3 +166,13 @@
 
 (defun minibuf-point-charpos ()
   (window-current-charpos (minibuffer-window)))
+
+(defun minibuf-window-update ()
+  (screen-erase (window-screen (minibuffer-window)))
+  (screen-print-string (window-screen (minibuffer-window)) 0 0
+                       (region-string (point-min (minibuffer))
+                                      (point-max (minibuffer))
+                                      (minibuffer)))
+  (screen-move-cursor (window-screen (minibuffer-window))
+                      (minibuffer-point-charpos)
+                      (1- (minibuf-point-linum))))
