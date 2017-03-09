@@ -196,3 +196,45 @@
     (let ((str (get-minibuffer-string)))
       (add-history *minibuf-read-line-history* str)
       str)))
+
+(defun minibuf-read-line (prompt initial comp-f existing-p history-name)
+  (let ((*minibuffer-calls-window* (current-window))
+        (*minibuf-read-line-history* (let ((table (gethash history-name *minibuf-read-line-history-table*)))
+                                       (or table
+                                           (setf (gethash history-name *minibuf-read-line-history-table*)
+                                                 (make-history))))))
+    (handler-case
+        (call-with-allow-interrupt
+         nil
+         (lambda ()
+           (with-current-window (minibuffer-window)
+             (let ((minibuf-buffer-prev-string
+                    (join "" (buffer-take-lines (minibuffer))))
+                   (minibuf-buffer-prev-point
+                    (window-point (minibuffer-window)))
+                   (*minibuf-read-line-depth*
+                    (1+ *minibuf-read-line-depth*)))
+               (let ((*inhibit-read-only* t))
+                 (buffer-erase))
+               (minibuffer-mode)
+               (let ((start-point (current-point)))
+                 (insert-string prompt)
+                 (put-attribute start-point (current-point) *minibuffer-prompt-attribute*)
+                 (put-property start-point (current-point) 'nwe.property:read-only t)
+                 (put-property (shift-point (current-point) -1)
+                               (current-point)
+                               'nwe.property:field-separator t))
+               (let ((*minibuffer-start-point* (current-point)))
+                 (when initial
+                   (insert-string initial))
+                 (unwind-protect (call-with-save-windows
+                                  (minibuffer-calls-window)
+                                  (lambda ()
+                                    (minibuf-read-line-loop comp-f existing-p)))
+                   (with-current-window (minibuffer-window)
+                     (let ((*inhibit-read-only* t))
+                       (buffer-erase))
+                     (insert-string minibuf-buffer-prev-string)
+                     (point-set minibuf-buffer-prev-point))))))))
+      (editor-abort (c)
+        (error c)))))
