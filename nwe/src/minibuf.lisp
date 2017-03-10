@@ -238,3 +238,6 @@
                      (point-set minibuf-buffer-prev-point))))))))
       (editor-abort (c)
         (error c)))))
+
+(defun minibuf-read-string (prompt &optional initial)
+  (minibuf-read-line prompt (or initial "") nil nil 'mh-read-string))
