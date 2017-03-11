@@ -255,3 +255,18 @@
                              (if min (<= min n) t)
                              (if max (<= n max) t))))
                       'mh-read-number)))
+
+(defun minibuf-read-buffer (prompt &optional default existing)
+  (when default
+    (setq prompt (format nil "~a(~a) " prompt default)))
+  (let ((result (minibuf-read-line
+                 prompt
+                 ""
+                 'completoin-buffer-name
+                 (and existing
+                      (lambda (name)
+                        (member name (buffer-list) :test #'string= :key #'buffer-name)))
+                 'mh-read-buffer)))
+    (if (string= result "")
+        defualt
+        result)))
