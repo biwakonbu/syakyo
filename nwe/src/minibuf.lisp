@@ -270,3 +270,16 @@
     (if (string= result "")
         defualt
         result)))
+
+(defun minibuf-read-file (prompt &optional directory default existing)
+  (when default
+    (setq prompt (format nil "~a(~a) " prompt default)))
+  (let ((result
+         (minibuf-read-line prompt
+                            directory
+                            'completion-file
+                            (and existing #'cl-fad:file-exists-p)
+                            'mh-read-file)))
+    (if (string= result "")
+        default
+        result)))
