@@ -1,5 +1,36 @@
 (in-package :nwe)
 
+(export '(*undo-limit*
+          current-buffer
+          buffer
+          buffer-p
+          buffer-name
+          buffer-filename
+          buffer-modified-p
+          buffer-read-only-p
+          buffer-enable-undo-p
+          buffer-major-omde
+          buffer-minor-modes
+          buffer-mark-p
+          buffer-nlines
+          buffer-overlays
+          buffer-truncate-lines
+          buffer-enable-undo
+          buffer-disable-undo
+          buffer-put-property
+          buffer-get-char
+          buffer-line-string-with-attributes
+          buffer-line-string
+          map-buffer-lines
+          buffer-take-lines
+          buffer-erase
+          buffer-rename
+          buffer-directory
+          buffer-undo-boundary
+          get-bvar
+          clear-buffer-variables
+          buffer-add-delete-hook))
+
 (defstruct (line (:constructor %make-line))
   prev
   next
