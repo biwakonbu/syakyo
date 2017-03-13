@@ -1,5 +1,13 @@
 (in-package :nwe)
 
+(defstruct (line (:constructor %make-line))
+  prev
+  next
+  str
+  plist
+  %symbol-lifetimes
+  %region)
+
 (defun make-buffer (name &key filename read-only-p (enable-undo-p t))
   (let ((buffer (make-instance 'buffer
                    :name name
