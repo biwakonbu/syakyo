@@ -39,6 +39,12 @@
   %symbol-lifetimes
   %region)
 
+(defmethod print-object ((object line) stream)
+  (print-unreadable-object (object stream :identity t)
+    (format stream "LINE: string: ~S, plist: ~S"
+            (line-str object)
+            (line-plist object))))
+
 (defun make-buffer (name &key filename read-only-p (enable-undo-p t))
   (let ((buffer (make-instance 'buffer
                    :name name
