@@ -55,6 +55,9 @@
       (setf (line-next prev) line))
     line))
 
+(defun line-length (line)
+  (length (line-str line)))
+
 (defun make-buffer (name &key filename read-only-p (enable-undo-p t))
   (let ((buffer (make-instance 'buffer
                    :name name
