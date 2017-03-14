@@ -45,6 +45,16 @@
             (line-str object)
             (line-plist object))))
 
+(defun make-line (prev next str)
+  (let ((line (%make-line :next next
+                          :prev prev
+                          :str str)))
+    (when next
+      (setf (line-prev next) line))
+    (when prev
+      (setf (line-next prev) line))
+    line))
+
 (defun make-buffer (name &key filename read-only-p (enable-undo-p t))
   (let ((buffer (make-instance 'buffer
                    :name name
