@@ -79,3 +79,18 @@
                        :name "buffer-point"))
     (add-buffer buffer)
     buffer))
+
+(defun remove-elements (elements start end)
+  (iter:iter (iter:for (start1 end1 value1) iter:in elements)
+    (cond
+      ((<= start start1 end1 end)
+       nil)
+      ((<= start start1 end end1)
+       (iter:collect (list end end1 value1)))
+      ((<= start1 start end1 end)
+       (iter:collect (list start1 start value1)))
+      ((<= start1 start end end1)
+       (iter:collect (list start1 start value1))
+       (iter:collect (list end end1 value1)))
+      (t
+       (iter:collect (list start1 end1 value1))))))
