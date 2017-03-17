@@ -94,3 +94,19 @@
        (iter:collect (list end end1 value1)))
       (t
        (iter:collect (list start1 end1 value1))))))
+
+(defun normalization-elements (elements)
+  (flet ((start (elt) (first elt))
+         (end (elt) (second elt))
+         (value (elt) (third elt)))
+    (setf elements (sort elements #'< :key #'first))
+    (iter:iter (iter:until (null elements))
+      (cond
+        ((and (eql (end (first elements))
+                   (start (second elements)))
+              (equal (value (first elements))
+                     (value (second elements))))
+         (iter:collect (list (start (first elements))
+                             (end (second elements))
+                             (value (first elements))))
+         (setf elements (cdr elements)))))))
