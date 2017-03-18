@@ -122,3 +122,8 @@
        (iter:collect (list (- start start) (- endq start) value1)))
       ((<= start1 start end end1)
        (iter:collect (list (- start start) (- end start) value1))))))
+
+(defun put-elements (elements start end value &optional contp)
+  (normalization-elements
+   (cons (list start end value contp)
+         (remove-elements elements start end))))
