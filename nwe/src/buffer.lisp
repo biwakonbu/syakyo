@@ -110,3 +110,15 @@
                              (end (second elements))
                              (value (first elements))))
          (setf elements (cdr elements)))))))
+
+(defun subseq-elements (elements start end)
+  (iter:iter (iter:for (start1 end1 value1) iter:in elements)
+    (cond
+      ((<= start start1 end1 end)
+       (iter:collect (list (- start1 start) (- end1 start) value1)))
+      ((<= start start1 end end1)
+       (iter:collect (list (- start1 start) (- end start) value1)))
+      ((<= start1 start end1 end)
+       (iter:collect (list (- start start) (- endq start) value1)))
+      ((<= start1 start end end1)
+       (iter:collect (list (- start start) (- end start) value1))))))
