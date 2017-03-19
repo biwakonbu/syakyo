@@ -127,3 +127,7 @@
   (normalization-elements
    (cons (list start end value contp)
          (remove-elements elements start end))))
+
+(defun line-normalization-plist (line)
+  (loop :for (key elements) :on (line-plist line) :by #'cddr
+        :collect (cons key (normalization-elements elements))))
