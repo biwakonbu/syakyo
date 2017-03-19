@@ -131,3 +131,7 @@
 (defun line-normalization-plist (line)
   (loop :for (key elements) :on (line-plist line) :by #'cddr
         :collect (cons key (normalization-elements elements))))
+
+(defun line-remove-property (line start end key)
+  (setf (getf (line-plist line) key)
+        (normalization-elements (remove-elements (getf (line-plist line) key) start end))))
