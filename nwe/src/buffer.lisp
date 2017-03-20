@@ -135,3 +135,8 @@
 (defun line-remove-property (line start end key)
   (setf (getf (line-plist line) key)
         (normalization-elements (remove-elements (getf (line-plist line) key) start end))))
+
+(defun line-add-property (line start end key value contp)
+  (setf (getf (line-plist line) key)
+        (put-elements (getf (line-plist line) key)
+                      start end value contp)))
