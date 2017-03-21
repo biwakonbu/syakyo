@@ -140,3 +140,6 @@
   (setf (getf (line-plist line) key)
         (put-elements (getf (line-plist line) key)
                       start end value contp)))
+
+(defun line-clear-property (line key)
+  (setf (getf (line-plist line) key) nil))
