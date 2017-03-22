@@ -143,3 +143,10 @@
 
 (defun line-clear-property (line key)
   (setf (getf (line-plist line) key) nil))
+
+(defun line-search-property (line key pos)
+  (loop :for (start end value contp) :in (getf (line-plist line) key)
+     :do (when (if contp
+                   (<= start pos end)
+                   (<= start pos (1- end)))
+           (return value))))
