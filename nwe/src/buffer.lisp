@@ -150,3 +150,13 @@
                    (<= start pos end)
                    (<= start pos (1- end)))
            (return value))))
+
+(defun line-search-property-range (line key pos-start pos-end)
+  (when (null pos-end)
+    (setq pos-end most-positive-fixnum))
+  (loop :for (start end value contp) :in (getf (line-plist line) key)
+     :do (when (or (<= pos-start start pos-end)
+                   (if contp
+                       (<= start pos-start end)
+                       (<= start pos-start (1- end))))
+           (return value))))
