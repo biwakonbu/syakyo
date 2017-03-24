@@ -160,3 +160,15 @@
                        (<= start pos-start end)
                        (<= start pos-start (1- end))))
            (return value))))
+
+(defun line-property-insert-pos (line pos offset)
+  (loop :for values :in (cdr (line-plist line)) :by #'cddr
+     :do (loop :for v :in values
+            :for (start end) := v
+            :do (cond ((<= pos start)
+                       (incf (first v) offset)
+                       (incf (second v) offset))
+                      ((< start pos end)
+                       (incf (second v) offset))
+                      ((< pos end)
+                       (incf (second v) offset))))))
