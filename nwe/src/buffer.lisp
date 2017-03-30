@@ -198,3 +198,21 @@
              (unless (null new-values)
                (setf (getf new-plist (car plist-rest)) new-values))))
     (setf (line-plist next-line) new-plist)))
+
+(defun line-property-delete-pos (line pos n)
+  (loop :for plist-rest :on (line-plist line) :by #'cddr
+     :do (setf (cadr plist-rest)
+               (loop :for elt :in (cadr plist-rest)
+                  :for (start end value) := elt
+                  :if (<= pos start end (+ pos n))
+                  :do (progn)
+                  :else :if (< pos start (+ pos n) start)
+                  :collect (list (- start n) (- end n) value)
+                  :else :if (< pos start (+ pos n))
+                  :collect (list pos (- end n) value)
+                  :else :if (<= start pos (+ pos n) end)
+                  :collect (list start (- end n) value)
+                  :else :if (<= start pos end (+ pos n))
+                  :collect (list start pos value)
+                  :else
+                  :collect elt))))
