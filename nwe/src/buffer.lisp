@@ -216,3 +216,16 @@
                   :collect (list start pos value)
                   :else
                   :collect elt))))
+
+(defun line-property-delete-line (line pos)
+  (loop :for plist-rest :on (line-plist line) :by #'cddr
+     :do (setf (cadr plist-rest)
+               (loop :for elt :in (cadr plist-rest)
+                  :for (start end value) := elt
+                  :if (<= pos start)
+                  :do (progn)
+                  :else :if (<= pos end)
+                  :collect (list start pos value)
+                  :else
+                  :collect elt
+                  ))))
