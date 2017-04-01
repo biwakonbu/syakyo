@@ -229,3 +229,14 @@
                   :else
                   :collect elt
                   ))))
+
+(defun line-free (line)
+  (when (line-prev line)
+    (setf (line-next (line-prev line))
+          (line-next line)))
+  (when (line-next line)
+    (setf (line-prev (line-next line))
+          (line-prev line)))
+  (setf (line-prev line) nil
+        (line-next line) nil
+        (line-str line) nil))
