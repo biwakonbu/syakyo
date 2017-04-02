@@ -240,3 +240,8 @@
   (setf (line-prev line) nil
         (line-next line) nil
         (line-str line) nil))
+
+(defun line-step-n (line n step-f)
+  (do ((l line (funcall step-f l))
+       (i 0 (1+ i)))
+      ((= i n) l)))
