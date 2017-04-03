@@ -245,3 +245,6 @@
   (do ((l line (funcall step-f l))
        (i 0 (1+ i)))
       ((= i n) l)))
+
+(defun line-forward-n (line n)
+  (line-step-n line n 'line-next))
